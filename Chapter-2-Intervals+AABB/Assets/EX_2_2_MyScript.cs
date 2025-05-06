@@ -16,7 +16,7 @@ public class EX_2_2_MyScript : MonoBehaviour
     public Vector3 BoundSize = Vector3.one; // Interval size on each axis
 
     public GameObject TestPosition = null;  // position for performing inside/outside test
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -33,7 +33,7 @@ public class EX_2_2_MyScript : MonoBehaviour
         // Step 1: update drawing options
         MyBound.DrawBoundingBox = DrawBox;
         MyBound.DrawIntervals = DrawIntervals;
-           
+
         // Step 2: control the box
         if (ControlWithMinMax) {
             // User controls Min/Max Position, set for visualization
@@ -44,7 +44,7 @@ public class EX_2_2_MyScript : MonoBehaviour
             BoundSize = MaxPos.transform.localPosition - MinPos.transform.localPosition;
             CenterPos.transform.localPosition = 0.5f * (MaxPos.transform.localPosition + MinPos.transform.localPosition);
         } else {
-            // User control center position and the size, set for visualization 
+            // User control center position and the size, set for visualization
             MyBound.Center = CenterPos.transform.localPosition;
             MyBound.Size = BoundSize;
 
@@ -57,9 +57,10 @@ public class EX_2_2_MyScript : MonoBehaviour
         Vector3 pos = TestPosition.transform.localPosition;
         Vector3 min = MinPos.transform.localPosition;
         Vector3 max = MaxPos.transform.localPosition;
+        Debug.Log("x pos = " + pos.x + ", y pos = " + pos.y + ", z pos = " + pos.z);
         if ( (pos.x > min.x) && (pos.x < max.x) &&   // if point in x-interval   AND
              (pos.y > min.y) && (pos.y < max.y) &&   //    point in y-interval   AND
-             (pos.z > min.z) && (pos.z < max.z) )    //    point in z-interval   
+             (pos.z > min.z) && (pos.z < max.z) )    //    point in z-interval
         {
             Debug.Log("TestPosition Inside!");
             MyBound.SetBoxColor(MyDrawObject.CollisionColor);
