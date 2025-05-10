@@ -60,11 +60,13 @@ public class EX_2_3_MyScript : MonoBehaviour
 
         TestPosition.transform.position = TestPositionCoord;
 
-        float testPosY = TestPosition.transform.position.y;
+        float testPosY = TestPositionCoord.y;
+
+        bool inGreenRange = CheckInsideOrOut(testPosY, GreenIntervalMin, GreenIntervalMax);
+        bool inBlueRange = CheckInsideOrOut(testPosY, BlueIntervalMin, BlueIntervalMax);
 
         // Intersect Green and Blue Intervals
-        if (GreenIntervalMin <= BlueIntervalMax&&
-            GreenIntervalMax >= BlueIntervalMin) {   // overlap condition
+        if (OverlapExists()) {   // overlap condition
 
             OverlapInterval.DrawInterval = true; // show the overlap interval
 
@@ -76,35 +78,39 @@ public class EX_2_3_MyScript : MonoBehaviour
 
             Debug.Assert(GreenInterval.IntervalsIntersect(BlueInterval));
 
+            bool inOverlapRange = CheckInsideOrOut(testPosY, OverlapIntervalMin, OverlapIntervalMax);
+
+            if (inOverlapRange)
+                Debug.Log("TestPosition Inside OverlapInterval");
+            else {
+                if (inGreenRange)
+                    Debug.Log("TestPosition Inside GreenInterval");
+                if (inBlueRange)
+                    Debug.Log("TestPosition Inside BlueInterval");
+            }
+
             }
                 // This function is also implemented in the MyIntervalBound class
         else {
             OverlapInterval.DrawInterval = false;
             OverlapIntervalMax = float.NaN;
             OverlapIntervalMin = float.NaN;
-        }
-        if (CheckInsideOrOut(testPosY, OverlapIntervalMin, OverlapIntervalMax)) {
-            Debug.Log("TestPosition Inside OverlapInterval");
-            }
-        if (CheckInsideOrOut(testPosY, GreenIntervalMin, GreenIntervalMax)) {
-            Debug.Log("TestPosition Inside GreenInterval");
-        }
-        if (CheckInsideOrOut(testPosY, BlueIntervalMin, BlueIntervalMax)) {
-            Debug.Log("TestPosition Inside BlueInterval");
+
+            if (inGreenRange)
+                Debug.Log("TestPosition Inside GreenInterval");
+            if (inBlueRange)
+                Debug.Log("TestPosition Inside BlueInterval");
+
         }
     }
 
-
-    private bool CheckInsideOrOut(float testPoint ,float min, float max) {
-        if (testPoint <= max && testPoint >= min) {
-            return true;
-        }
-        else {
-            return false;
-        }
+    private bool CheckInsideOrOut(float testPoint, float min, float max) {
+        return testPoint <= max && testPoint >= min;
     }
 
-
-
+    private bool OverlapExists() {
+        return GreenIntervalMin <= BlueIntervalMax &&
+               GreenIntervalMax >= BlueIntervalMin;
+    }
 }
 
