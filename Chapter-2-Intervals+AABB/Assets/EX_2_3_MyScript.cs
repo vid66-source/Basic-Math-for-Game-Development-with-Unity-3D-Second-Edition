@@ -75,24 +75,25 @@ public class EX_2_3_MyScript : MonoBehaviour
             OverlapInterval.MinValue = OverlapIntervalMin;
 
             Debug.Assert(GreenInterval.IntervalsIntersect(BlueInterval));
+
+            }
                 // This function is also implemented in the MyIntervalBound class
-        } else {
+        else {
             OverlapInterval.DrawInterval = false;
             OverlapIntervalMax = float.NaN;
             OverlapIntervalMin = float.NaN;
         }
-
+        if (CheckInsideOrOut(testPosY, OverlapIntervalMin, OverlapIntervalMax)) {
+            Debug.Log("TestPosition Inside OverlapInterval");
+            }
         if (CheckInsideOrOut(testPosY, GreenIntervalMin, GreenIntervalMax)) {
             Debug.Log("TestPosition Inside GreenInterval");
         }
         if (CheckInsideOrOut(testPosY, BlueIntervalMin, BlueIntervalMax)) {
             Debug.Log("TestPosition Inside BlueInterval");
         }
-        else if (CheckInsideOrOut(testPosY, OverlapIntervalMin, OverlapIntervalMax)) {
-            Debug.Log("TestPosition Inside OverlapInterval");
-        }
-
     }
+
 
     private bool CheckInsideOrOut(float testPoint ,float min, float max) {
         if (testPoint <= max && testPoint >= min) {
@@ -102,5 +103,8 @@ public class EX_2_3_MyScript : MonoBehaviour
             return false;
         }
     }
+
+
+
 }
 

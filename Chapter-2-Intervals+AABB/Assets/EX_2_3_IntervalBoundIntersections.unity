@@ -263,7 +263,7 @@ PrefabInstance:
     - target: {fileID: 1921131887914310938, guid: 27835bed58a9bf74a8cd9c20c64befd9, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 6515b22e62b78ba42b03d22962597daa, type: 2}
+      objectReference: {fileID: 2100000, guid: e2acc006e7456254cb03a882c9d03402, type: 2}
     - target: {fileID: 6795802796411324672, guid: 27835bed58a9bf74a8cd9c20c64befd9, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -790,6 +790,7 @@ MonoBehaviour:
   OverlapIntervalMax: NaN
   OverlapIntervalMin: NaN
   TestPosition: {fileID: 706228232}
+  TestPositionCoord: {x: 0, y: 0, z: 0}
 --- !u!4 &2003562342
 Transform:
   m_ObjectHideFlags: 0
