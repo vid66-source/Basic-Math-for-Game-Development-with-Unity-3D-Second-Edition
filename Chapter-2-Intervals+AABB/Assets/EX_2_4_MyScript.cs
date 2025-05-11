@@ -116,11 +116,11 @@ public class EX_2_4_MyScript : MonoBehaviour {
 
         // Step 3: test for intersection ...
         // Two box bounds overlap when all three intervals overlap ...
-        if (isBoundingBoxinsideOroutside(TaxiBound.MinPosition, TaxiBound.MaxPosition, CarBound.MinPosition,
+        if (IsBoundingBoxinsideOroutside(TaxiBound.MinPosition, TaxiBound.MaxPosition, CarBound.MinPosition,
                 CarBound.MaxPosition)) {
             // Min/Max of the overlap box bound
-            Vector3 min = MinPos(TaxiBound.MinPosition, CarBound.MinPosition);
-            Vector3 max = MaxPos(TaxiBound.MaxPosition, CarBound.MaxPosition); // max z position
+            Vector3 min = ComputeOverlapMin(TaxiBound.MinPosition, CarBound.MinPosition);
+            Vector3 max = ComputeOverlapMax(TaxiBound.MaxPosition, CarBound.MaxPosition); // max z position
             OverlapBox.DrawBox = TaxiBound.DrawBox;
             OverlapBox.DrawIntervals = TaxiBound.DrawIntervals;
             OverlapBox.MinPosition = min;
@@ -141,11 +141,11 @@ public class EX_2_4_MyScript : MonoBehaviour {
 // The same functionality is implemented in the BoxBound
         // Debug.Assert(TaxiBound.BoxesIntersect(CarBound));
 
-        if (isBoundingBoxinsideOroutside(TaxiBound.MinPosition, TaxiBound.MaxPosition, CarFrontWheelsBound.MinPosition,
+        if (IsBoundingBoxinsideOroutside(TaxiBound.MinPosition, TaxiBound.MaxPosition, CarFrontWheelsBound.MinPosition,
                 CarFrontWheelsBound.MaxPosition)) {
             // Min/Max of the overlap box bound
-            Vector3 min = MinPos(TaxiBound.MinPosition, CarFrontWheelsBound.MinPosition);
-            Vector3 max = MaxPos(TaxiBound.MaxPosition, CarFrontWheelsBound.MaxPosition); // max z position
+            Vector3 min = ComputeOverlapMin(TaxiBound.MinPosition, CarFrontWheelsBound.MinPosition);
+            Vector3 max = ComputeOverlapMax(TaxiBound.MaxPosition, CarFrontWheelsBound.MaxPosition); // max z position
             OverlapBoxFrontWheels.DrawBox = TaxiBound.DrawBox;
             OverlapBoxFrontWheels.DrawIntervals = TaxiBound.DrawIntervals;
             OverlapBoxFrontWheels.MinPosition = min;
@@ -166,11 +166,11 @@ public class EX_2_4_MyScript : MonoBehaviour {
 // The same functionality is implemented in the BoxBound
         // Debug.Assert(TaxiBound.BoxesIntersect(CarFrontWheelsBound));
 
-        if (isBoundingBoxinsideOroutside(TaxiBound.MinPosition, TaxiBound.MaxPosition, CarBackWheelsBound.MinPosition,
+        if (IsBoundingBoxinsideOroutside(TaxiBound.MinPosition, TaxiBound.MaxPosition, CarBackWheelsBound.MinPosition,
                 CarBackWheelsBound.MaxPosition)) {
             // Min/Max of the overlap box bound
-            Vector3 min = MinPos(TaxiBound.MinPosition, CarBackWheelsBound.MinPosition);
-            Vector3 max = MaxPos(TaxiBound.MaxPosition, CarBackWheelsBound.MaxPosition); // max z position
+            Vector3 min = ComputeOverlapMin(TaxiBound.MinPosition, CarBackWheelsBound.MinPosition);
+            Vector3 max = ComputeOverlapMax(TaxiBound.MaxPosition, CarBackWheelsBound.MaxPosition); // max z position
             OverlapBoxBackWheels.DrawBox = TaxiBound.DrawBox;
             OverlapBoxBackWheels.DrawIntervals = TaxiBound.DrawIntervals;
             OverlapBoxBackWheels.MinPosition = min;
@@ -192,7 +192,7 @@ public class EX_2_4_MyScript : MonoBehaviour {
         // Debug.Assert(TaxiBound.BoxesIntersect(CarBackWheelsBound));
     }
 
-    private bool isBoundingBoxinsideOroutside(Vector3 firstMinPos, Vector3 firstMaxPos, Vector3 secondMinPos,
+    private bool IsBoundingBoxinsideOroutside(Vector3 firstMinPos, Vector3 firstMaxPos, Vector3 secondMinPos,
         Vector3 secondMaxPos) {
         return (((firstMinPos.x <= secondMaxPos.x) && //     X-interval overlap
                  (firstMaxPos.x >= secondMinPos.x))
@@ -204,7 +204,7 @@ public class EX_2_4_MyScript : MonoBehaviour {
                  (firstMaxPos.z >= secondMinPos.z)));
     }
 
-    private Vector3 MinPos(Vector3 firstMinPos, Vector3 secondMinPos) {
+    private Vector3 ComputeOverlapMin(Vector3 firstMinPos, Vector3 secondMinPos) {
         Vector3 min = Vector3.zero;
         return min = new Vector3(
             Mathf.Max(firstMinPos.x, secondMinPos.x), // min x position
@@ -212,7 +212,7 @@ public class EX_2_4_MyScript : MonoBehaviour {
             Mathf.Max(firstMinPos.z, secondMinPos.z)); // min z position
     }
 
-    private Vector3 MaxPos(Vector3 firstMaxPos, Vector3 secondMaxPos) {
+    private Vector3 ComputeOverlapMax(Vector3 firstMaxPos, Vector3 secondMaxPos) {
         Vector3 max = Vector3.zero;
         return max = new Vector3(
             Mathf.Min(firstMaxPos.x, secondMaxPos.x), // min x position
@@ -220,24 +220,3 @@ public class EX_2_4_MyScript : MonoBehaviour {
             Mathf.Min(firstMaxPos.z, secondMaxPos.z)); // min z position
     }
 }
-// if (((TaxiBound.MinPosition.x <= CarFrontWheelsBound.MaxPosition.x) && //     X-interval overlap
-//      (TaxiBound.MaxPosition.x >= CarFrontWheelsBound.MinPosition.x))
-//     && // AND
-//     ((TaxiBound.MinPosition.y <= CarFrontWheelsBound.MaxPosition.y) && //     Y-interval overlap
-//      (TaxiBound.MaxPosition.y >= CarFrontWheelsBound.MinPosition.y))
-//     && // AND
-//     ((TaxiBound.MinPosition.z <= CarFrontWheelsBound.MaxPosition.z) && //     Z-interval overlap
-//      (TaxiBound.MaxPosition.z >= CarFrontWheelsBound.MinPosition.z))) {
-//         Vector3 minFronWheels = new Vector3(
-//             Mathf.Max(TaxiBound.MinPosition.x, CarBound.MinPosition.x), // min x position
-//             Mathf.Max(TaxiBound.MinPosition.y, CarBound.MinPosition.y), // min y position
-//             Mathf.Max(TaxiBound.MinPosition.z, CarBound.MinPosition.z)); // min z position
-//         Vector3 maxFrontWheels = new Vector3(
-//             Mathf.Min(TaxiBound.MaxPosition.x, CarBound.MaxPosition.x), // max x position
-//             Mathf.Min(TaxiBound.MaxPosition.y, CarBound.MaxPosition.y), // max y position
-//             Mathf.Min(TaxiBound.MaxPosition.z, CarBound.MaxPosition.z)); // max z position
-//         OverlapBoxFrontWheels.DrawBox = TaxiBound.DrawBox;
-//         OverlapBoxFrontWheels.DrawIntervals = TaxiBound.DrawIntervals;
-//         OverlapBoxFrontWheels.MinPosition = minFronWheels;
-//         OverlapBoxFrontWheels.MaxPosition = maxFrontWheels;
-//     }
