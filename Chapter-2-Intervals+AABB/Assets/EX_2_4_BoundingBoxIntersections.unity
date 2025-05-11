@@ -219,14 +219,18 @@ MonoBehaviour:
   TheTaxi: {fileID: 1756149554}
   TheCar: {fileID: 743224096}
   CarCenterOffset: {x: 0, y: 0.75, z: 0}
+  CarCenterFrontWheelsOffset: {x: 0, y: 0.38, z: 1.57}
+  CarCenterBackWheelsOffset: {x: 0, y: 0.38, z: -1.36}
   TaxiBoundSize: {x: 2.7, y: 2, z: 5.5}
   CarBoundSize: {x: 2.5, y: 1.75, z: 5.25}
+  CarBoundFrontWheelsSize: {x: 2.15, y: 0.69, z: 0.74}
+  CarBoundBackWheelsSize: {x: 2.15, y: 0.69, z: 0.74}
+  CarBoundMaxValue: {x: 1, y: 1, z: 1}
+  CarBoundMinValue: {x: 0, y: 0, z: 0}
+  TaxiBoundMaxValue: {x: 1, y: 1, z: 1}
+  TaxiBoundMinValue: {x: 0, y: 0, z: 0}
   OverlapBoxMin: {x: 0, y: 0, z: 0}
   OverlapBoxMax: {x: 0, y: 0, z: 0}
-  CarBoundMaxValue: {x: 3.15, y: 1.75, z: 0.55}
-  CarBoundMinValue: {x: 0.9, y: -0.3, z: -4.6}
-  TaxiBoundMaxValue: {x: -1.95, y: 1.75, z: 4.75}
-  TaxiBoundMinValue: {x: -3.9, y: 0, z: -0.65}
 --- !u!4 &317622565
 Transform:
   m_ObjectHideFlags: 0
