@@ -22,7 +22,13 @@ public class EX_4_1_MyScript : MonoBehaviour
     // Support vector defined by Pi to Pj, and show as Pe
     public GameObject Pi = null;   // Position Pi
     public GameObject Pj = null;   // Position Pj
-    public GameObject Pe = null;   // Position vector: Pe
+    public GameObject Pe = null;// Position vector: Pe
+
+
+    [SerializeField] public float VdMagnitude;
+    [SerializeField] public float P1P2Magnitude;
+    [SerializeField] public float VeMagnitude;
+    [SerializeField] public float PiPjMagnitude;
 
 
     // Start is called before the first frame update
@@ -50,7 +56,7 @@ public class EX_4_1_MyScript : MonoBehaviour
         {
             VectorColor = new Color(0.2f, 0.0f, 0.2f),
             VectorAt = Vector3.zero    // Always draw Ve from the origin
-        };        
+        };
         ShowVeAtPi = new MyVector() {
             VectorColor = new Color(0.9f, 0.2f, 0.9f)
         };
@@ -67,7 +73,7 @@ public class EX_4_1_MyScript : MonoBehaviour
         P1.SetActive(DrawPositionAsVector);         // objects that support position as vector
         P2.SetActive(DrawPositionAsVector);
         Pd.SetActive(DrawPositionAsVector);
-        Pi.SetActive(DrawVectorAsPosition);         // objects that support vector as positions 
+        Pi.SetActive(DrawVectorAsPosition);         // objects that support vector as positions
         Pj.SetActive(DrawVectorAsPosition);
         Pe.SetActive(DrawVectorAsPosition);
         ShowVdAtP1.DrawVector = DrawPositionAsVector;    // Display or hide the vectors
@@ -81,6 +87,7 @@ public class EX_4_1_MyScript : MonoBehaviour
         {
             // Use position of Pd as position vector
             Vector3 vectorVd = Pd.transform.localPosition;
+            VdMagnitude = vectorVd.magnitude;
 
             // Step 1: take care of visualization
             //         for Vd
@@ -94,6 +101,7 @@ public class EX_4_1_MyScript : MonoBehaviour
 
             // Step 2: demonstrate P2 is indeed Vd away from P1
             P2.transform.localPosition = P1.transform.localPosition + vectorVd;
+            P1P2Magnitude = (P2.transform.localPosition - P1.transform.localPosition).magnitude;
         }
         #endregion
 
@@ -102,6 +110,7 @@ public class EX_4_1_MyScript : MonoBehaviour
         {
             // Use from Pi to Pj as vector for Ve
             Vector3 vectorVe = Pj.transform.localPosition - Pi.transform.localPosition;
+            PiPjMagnitude = vectorVe.magnitude;
 
             // Step 1: Take care of visualization
             //         for Ve: from Pi to Pj
@@ -112,6 +121,7 @@ public class EX_4_1_MyScript : MonoBehaviour
 
             // Step 2: demonstrate Pe is indeed Ve away from the origin
             Pe.transform.localPosition = vectorVe;
+            VeMagnitude = Pe.transform.localPosition.magnitude;
         }
         #endregion
     }
