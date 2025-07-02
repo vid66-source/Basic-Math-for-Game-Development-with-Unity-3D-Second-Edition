@@ -51,10 +51,14 @@ public class EX_4_2_MyScript : MonoBehaviour{
             VectorColor = new Color(0.4f, 0.9f, 0.9f),
             VectorAt = Vector3.zero // Position Vector at the origin
         };
+
+
         for (int i = 0; i < 5; i++){
             MyVector showNewVector = new MyVector{
                 VectorColor = new Color(0.1f + 0.1f * i, 0.1f + 0.1f * i, 0.1f + 0.1f * i)
             };
+            float vectorLength = i + 1;
+            showNewVector.Magnitude = vectorLength;
             showVectors.Add(showNewVector);
         }
 
@@ -125,10 +129,8 @@ public class EX_4_2_MyScript : MonoBehaviour{
             for (int i = 0; i < showVectors.Count; i++){
                 float valueI = i;
                 Vector3 newVectorDirection = isZeroVector ? saveVector3 : vectorVa.normalized;
-                Vector3 newVector = isZeroVector ? saveVector3 * ++valueI : vectorVa.normalized * ++valueI;
                 showVectors[i].Direction = newVectorDirection;
-                showVectors[i].Magnitude = newVector.magnitude;
-                Vector3 vectorPostion = new Vector3(valueI, 0, 0);
+                Vector3 vectorPostion = new Vector3(++valueI, 0, 0);
                 showVectors[i].VectorAt = SphereAtOrigin.transform.localPosition + vectorPostion;
             }
         }
