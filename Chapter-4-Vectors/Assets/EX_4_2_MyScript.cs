@@ -127,10 +127,10 @@ public class EX_4_2_MyScript : MonoBehaviour{
 
         if (ShowNewVectors){
             for (int i = 0; i < showVectors.Count; i++){
-                float valueI = i;
+                float valueI = i + 1;
                 Vector3 newVectorDirection = isZeroVector ? saveVector3 : vectorVa.normalized;
                 showVectors[i].Direction = newVectorDirection;
-                Vector3 vectorPostion = new Vector3(++valueI, 0, 0);
+                Vector3 vectorPostion = new Vector3(valueI, 0, 0);
                 showVectors[i].VectorAt = SphereAtOrigin.transform.localPosition + vectorPostion;
             }
         }
