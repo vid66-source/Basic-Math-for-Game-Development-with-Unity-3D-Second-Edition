@@ -24,8 +24,8 @@ public class BoundingSphere {
         Gizmos.DrawWireSphere(Center, Radius);
     }
 
-    public bool Intersects() {
-        Vector3 targetPosition = ObjectToInteractWith.transform.position;
+    public bool Intersects(GameObject targetObject) {
+        Vector3 targetPosition = targetObject.transform.position;
         Vector3 centerPosition = ShpereCenter.transform.position;
         float sqrDistance = (targetPosition - centerPosition).sqrMagnitude;
         float sqrRadius = Radius * Radius;

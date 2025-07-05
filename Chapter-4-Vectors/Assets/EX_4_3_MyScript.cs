@@ -65,13 +65,9 @@ public class EX_4_3_MyScript : MonoBehaviour {
 
             #region Process the Explorer (checkered sphere)
 
-            Vector3 explorerVelocity = ExplorerSpeed * vETn; // define velocity
-            if (_boundingSphere.Intersects()) {
-                Vector3 lastPosition = CheckeredExplorer.transform.localPosition;
-                CheckeredExplorer.transform.localPosition = lastPosition;
-            }
-            else {
-                CheckeredExplorer.transform.localPosition += explorerVelocity * Time.deltaTime; // update position
+            if (!_boundingSphere.Intersects(CheckeredExplorer)) {
+                Vector3 explorerVelocity = ExplorerSpeed * vETn;
+                CheckeredExplorer.transform.localPosition += explorerVelocity * Time.deltaTime;
             }
 
             #endregion
@@ -81,7 +77,7 @@ public class EX_4_3_MyScript : MonoBehaviour {
             Vector3 agentVelocity = AgentSpeed * vETn; // define velocity
             GreenAgent.transform.localPosition += agentVelocity * Time.deltaTime; // update position
             Vector3 vEA = GreenAgent.transform.localPosition - CheckeredExplorer.transform.localPosition;
-            if (vEA.magnitude > AgentDistance)
+            if (_boundingSphere.Intersects(GreenAgent))
                 GreenAgent.transform.localPosition = CheckeredExplorer.transform.localPosition;
 
             #endregion
