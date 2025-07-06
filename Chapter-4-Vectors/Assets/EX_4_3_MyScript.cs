@@ -6,6 +6,7 @@ public class EX_4_3_MyScript : MonoBehaviour {
     // Drawing control
     public bool DrawVelocity = true;
     public bool BeginExplore = false;
+    private bool movingToTarget = false;
 
     public bool ShowRedTargetBoundingSphere = false;
     public bool ShowCheckeredExplorerBoundingSphere = false;
@@ -33,12 +34,13 @@ public class EX_4_3_MyScript : MonoBehaviour {
         Debug.Assert(RedTarget != null);
         Debug.Assert(GreenAgent != null);
 
-        ShowVelocity = new MyVector() {
+        ShowVelocity = new MyVector {
             VectorColor = Color.green
         };
 
-        // initially Agent is resting insdie the Explorer
+        // Start at CheckeredExplorer
         GreenAgent.transform.localPosition = CheckeredExplorer.transform.localPosition;
+        movingToTarget = true;
 
         var sv = UnityEditor.SceneVisibilityManager.instance;
         sv.DisablePicking(GreenAgent, true);
@@ -47,6 +49,7 @@ public class EX_4_3_MyScript : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         Vector3 vET = RedTarget.transform.localPosition - CheckeredExplorer.transform.localPosition;
+        Vector3 vTE = CheckeredExplorer.transform.localPosition - RedTarget.transform.localPosition;
 
         ShowVelocity.VectorAt = CheckeredExplorer.transform.localPosition;
         ShowVelocity.Magnitude = ExplorerSpeed * kSpeedScaleForDrawing;
@@ -59,6 +62,7 @@ public class EX_4_3_MyScript : MonoBehaviour {
             if (dToTarget < float.Epsilon)
                 return; // Avoid normalizing a zero vector
             Vector3 vETn = vET.normalized;
+            Vector3 vTEn = vTE.normalized;
 
             #region Process the Explorer (checkered sphere)
 
@@ -71,13 +75,24 @@ public class EX_4_3_MyScript : MonoBehaviour {
 
             #region Process the Agent (small green sphere)
 
-            Vector3 vAT = RedTarget.transform.localPosition - GreenAgent.transform.localPosition;
-            Vector3 vAE = CheckeredExplorer.transform.localPosition - GreenAgent.transform.localPosition;
-            Vector3 vAEn = vAE.normalized;
+            Vector3 agentTarget = movingToTarget ? RedTarget.transform.localPosition : CheckeredExplorer.transform.localPosition;
+            Vector3 toTarget = agentTarget - GreenAgent.transform.localPosition;
+            float sqrDistance = toTarget.sqrMagnitude;
 
-            Vector3 agentVelocity = AgentSpeed * vETn; // define velocity
-            Vector3 reverseAgentVelocity = AgentSpeed * vAEn; // define velocity
-                GreenAgent.transform.localPosition += agentVelocity * Time.deltaTime; // update position
+            float radius = movingToTarget ? RedTargetBoundingSphereRadius : CheckeredExplorerBoundingSphereRadius;
+            float sqrRadius = radius * radius;
+
+            // Якщо досягли цілі — змінюємо напрям
+            if (sqrDistance <= sqrRadius) {
+                movingToTarget = !movingToTarget;
+                agentTarget = movingToTarget ? RedTarget.transform.localPosition : CheckeredExplorer.transform.localPosition;
+                toTarget = agentTarget - GreenAgent.transform.localPosition;
+            }
+
+            // Обчислюємо рух
+            Vector3 agentDirection = toTarget.normalized;
+            Vector3 agentVelocity = agentDirection * AgentSpeed;
+            GreenAgent.transform.localPosition += agentVelocity * Time.deltaTime;
 
             #endregion
         }
