@@ -491,7 +491,7 @@ MonoBehaviour:
   DrawVelocity: 1
   BeginExplore: 0
   ShowBoundingSphere: 0
-  BoundingSphereRadius: 1
+  BoundingSphereRadius: 1.45
   CheckeredExplorer: {fileID: 2108008940}
   ExplorerSpeed: 0.05
   GreenAgent: {fileID: 2035964324}

@@ -7,21 +7,24 @@ public class EX_4_3_MyScript : MonoBehaviour {
     public bool DrawVelocity = true;
     public bool BeginExplore = false;
 
-    private BoundingSphere _boundingSphere;
-    public bool ShowBoundingSphere = false;
-    public float BoundingSphereRadius = 1f;
+    public bool ShowRedTargetBoundingSphere = false;
+    public bool ShowCheckeredExplorerBoundingSphere = false;
+    public float RedTargetBoundingSphereRadius = 1f;
+    public float CheckeredExplorerBoundingSphereRadius = 1f;
 
     public GameObject CheckeredExplorer = null; // Support CheckeredExplorer
     public float ExplorerSpeed = 0.05f; // units per second
 
     public GameObject GreenAgent = null; // Support the GreenAgent
     public float AgentSpeed = 1.0f; // units per second
-    public float AgentDistance = 3.0f; // Distance to explore before returning to base
+    // public float AgentDistance = 3.0f; // Distance to explore before returning to base
 
     public GameObject RedTarget = null; // The RedTarget
     private MyVector ShowVelocity = null; // Visualizing Explorer Velocity
 
     private const float kSpeedScaleForDrawing = 15f;
+
+    public Color GizmoColor = Color.cyan;
 
 
     // Start is called before the first frame update
@@ -33,9 +36,6 @@ public class EX_4_3_MyScript : MonoBehaviour {
         ShowVelocity = new MyVector() {
             VectorColor = Color.green
         };
-        _boundingSphere = new BoundingSphere(RedTarget, CheckeredExplorer);
-        _boundingSphere.Radius = BoundingSphereRadius;
-        _boundingSphere.ShowGizmo = ShowBoundingSphere;
 
         // initially Agent is resting insdie the Explorer
         GreenAgent.transform.localPosition = CheckeredExplorer.transform.localPosition;
@@ -46,9 +46,6 @@ public class EX_4_3_MyScript : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        _boundingSphere.Radius = BoundingSphereRadius;
-        _boundingSphere.ShowGizmo = ShowBoundingSphere;
-
         Vector3 vET = RedTarget.transform.localPosition - CheckeredExplorer.transform.localPosition;
 
         ShowVelocity.VectorAt = CheckeredExplorer.transform.localPosition;
@@ -65,7 +62,7 @@ public class EX_4_3_MyScript : MonoBehaviour {
 
             #region Process the Explorer (checkered sphere)
 
-            if (!_boundingSphere.Intersects(CheckeredExplorer)) {
+            if (!Intersects(CheckeredExplorer, RedTarget, RedTargetBoundingSphereRadius)) {
                 Vector3 explorerVelocity = ExplorerSpeed * vETn;
                 CheckeredExplorer.transform.localPosition += explorerVelocity * Time.deltaTime;
             }
@@ -74,19 +71,40 @@ public class EX_4_3_MyScript : MonoBehaviour {
 
             #region Process the Agent (small green sphere)
 
+            Vector3 vAT = RedTarget.transform.localPosition - GreenAgent.transform.localPosition;
+            Vector3 vAE = CheckeredExplorer.transform.localPosition - GreenAgent.transform.localPosition;
+            Vector3 vAEn = vAE.normalized;
+
             Vector3 agentVelocity = AgentSpeed * vETn; // define velocity
-            GreenAgent.transform.localPosition += agentVelocity * Time.deltaTime; // update position
-            Vector3 vEA = GreenAgent.transform.localPosition - CheckeredExplorer.transform.localPosition;
-            if (_boundingSphere.Intersects(GreenAgent))
-                GreenAgent.transform.localPosition = CheckeredExplorer.transform.localPosition;
+            Vector3 reverseAgentVelocity = AgentSpeed * vAEn; // define velocity
+                GreenAgent.transform.localPosition += agentVelocity * Time.deltaTime; // update position
 
             #endregion
         }
     }
 
+    public bool Intersects(GameObject targetObject, GameObject objectWithBoundingSphere, float radius) {
+        Vector3 targetPosition = targetObject.transform.position;
+        Vector3 centerPosition = objectWithBoundingSphere.transform.position;
+        float sqrDistance = (targetPosition - centerPosition).sqrMagnitude;
+        float sqrRadius = radius * radius;
+        return sqrDistance <= sqrRadius;
+    }
+
     void OnDrawGizmos() {
-        if (_boundingSphere != null) {
-            _boundingSphere.DrawSphere();
-        }
+        if (ShowRedTargetBoundingSphere)
+            DrawBoundingSphere(RedTarget, RedTargetBoundingSphereRadius);
+
+        if (ShowCheckeredExplorerBoundingSphere)
+            DrawBoundingSphere(CheckeredExplorer, CheckeredExplorerBoundingSphereRadius);
+    }
+
+    void DrawBoundingSphere(GameObject centerObject, float radius) {
+        if (centerObject == null)
+            return;
+
+        Vector3 center = centerObject.transform.position;
+        Gizmos.color = GizmoColor;
+        Gizmos.DrawWireSphere(center, radius);
     }
 }
