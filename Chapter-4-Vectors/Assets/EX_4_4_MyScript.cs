@@ -4,18 +4,20 @@ using UnityEngine;
 
 public class EX_4_4_MyScript : MonoBehaviour
 {
-    public GameObject P0, P1, P2;    // V1=P1-P0 and V2=P2-p1
+    public GameObject P0, P1, P2, P3;    // V1=P1-P0 and V2=P2-p1
     private MyVector ShowV1atP0, ShowV2atV1, // Show V1 at P0 and V2 at head of V1
                      ShowV2atP0, ShowV1atV2, // Show V2 at P0 and V1 at head of V2
+                     ShowV3atV2, // Show V3 at head of V2
                      ShowSumV12, ShowSumV21, // V1+V2, and V2+V1
+                     ShowSumV123,         // V1+V2+V3
                      ShowSubV12,         // V1-V2
                      ShowNegV2;          // -V2
 
-    private MyVector PosV1, PosV2, PosSum, PosSub, PosNegV2; // Show as position vectors
+    private MyVector PosV1, PosV2, PosV3, PosSum, PosSumV123,  PosSub, PosNegV2; // Show as position vectors
 
     public bool DrawAxisFrame = true;
-    public bool DrawV12 = false, DrawV21 = false;
-    public bool DrawSum = false;
+    public bool DrawV12 = false, DrawV21 = false, DrawV32 = false;
+    public bool DrawSum = false, DrawSum123 = false;
     public bool DrawSub = false, DrawNegV2 = false;
     public bool DrawPosVec = false;
 
@@ -25,6 +27,7 @@ public class EX_4_4_MyScript : MonoBehaviour
         Debug.Assert(P0 != null);
         Debug.Assert(P1 != null);
         Debug.Assert(P2 != null);
+        Debug.Assert(P3 != null);
 
         ShowV1atP0 = new MyVector()
         {
@@ -54,6 +57,16 @@ public class EX_4_4_MyScript : MonoBehaviour
             VectorColor = Color.blue
         };
 
+        ShowV3atV2 = new MyVector()
+        {
+            VectorColor = Color.magenta
+        };
+        PosV3 = new MyVector()
+        {
+            VectorAt = Vector3.zero,
+            VectorColor = Color.magenta
+        };
+
         ShowSumV12 = new MyVector()
         {
             VectorColor = Color.green
@@ -66,6 +79,16 @@ public class EX_4_4_MyScript : MonoBehaviour
         {
             VectorAt = Vector3.zero,
             VectorColor = Color.green
+        };
+
+        ShowSumV123 = new MyVector()
+        {
+            VectorColor = Color.cyan
+        };
+        PosSumV123 = new MyVector()
+        {
+            VectorAt = Vector3.zero,
+            VectorColor = Color.cyan
         };
 
         ShowSubV12 = new MyVector()
@@ -94,8 +117,10 @@ public class EX_4_4_MyScript : MonoBehaviour
     {
         Vector3 V1 = P1.transform.localPosition - P0.transform.localPosition;
         Vector3 V2 = P2.transform.localPosition - P1.transform.localPosition;
+        Vector3 V3 = P3.transform.localPosition - P2.transform.localPosition;
         Vector3 sumV12 = V1 + V2;
         Vector3 sumV21 = V2 + V1;
+        Vector3 sumV123 = V3 + V2 + V1;
         Vector3 negV2 = -V2;
         Vector3 subV12 = V1 + negV2;
 
@@ -109,6 +134,10 @@ public class EX_4_4_MyScript : MonoBehaviour
         ShowSumV21.DrawVector = DrawSum;
         ShowSubV12.DrawVector = DrawSub;
         ShowNegV2.DrawVector = DrawNegV2;
+        ShowV3atV2.DrawVector = DrawV32;
+        ShowSumV123.DrawVector = DrawSum123;
+        PosV3.DrawVector = DrawPosVec && DrawV32;
+        PosSumV123.DrawVector = DrawPosVec && DrawSum123;
         PosV1.DrawVector = DrawPosVec && (DrawV12 || DrawV21);
         PosV2.DrawVector = DrawPosVec && (DrawV12 || DrawV21);
         PosSum.DrawVector = DrawPosVec && DrawSum;
@@ -142,6 +171,16 @@ public class EX_4_4_MyScript : MonoBehaviour
         PosV2.Magnitude = V2.magnitude;
         #endregion
 
+        #region V3: show V3 at head of V2
+
+        ShowV3atV2.VectorAt = P0.transform.localPosition + V2 + V1;
+        ShowV3atV2.Direction = V3;
+        ShowV3atV2.Magnitude = V3.magnitude;
+
+        PosV3.Direction = V3;
+        PosV3.Magnitude = V3.magnitude;
+        #endregion
+
         #region Sum: show V1+V2 and V2+V1
         ShowSumV12.VectorAt = P0.transform.localPosition;
         ShowSumV12.Direction = sumV12;
@@ -155,7 +194,16 @@ public class EX_4_4_MyScript : MonoBehaviour
         PosSum.Magnitude = sumV12.magnitude;
         #endregion
 
-        #region Sub: show V1-V2 
+        #region Sum: show V1+V2+V3
+        ShowSumV123.VectorAt = P0.transform.localPosition;
+        ShowSumV123.Direction = sumV123;
+        ShowSumV123.Magnitude = sumV123.magnitude;
+
+        PosSumV123.Direction = sumV123;
+        PosSumV123.Magnitude = sumV123.magnitude;
+        #endregion
+
+        #region Sub: show V1-V2
         ShowSubV12.VectorAt = P0.transform.localPosition;
         ShowSubV12.Direction = subV12;
         ShowSubV12.Magnitude = subV12.magnitude;
@@ -171,6 +219,6 @@ public class EX_4_4_MyScript : MonoBehaviour
 
         PosNegV2.Direction = negV2;
         PosNegV2.Magnitude = negV2.magnitude;
-        #endregion 
+        #endregion
     }
 }
