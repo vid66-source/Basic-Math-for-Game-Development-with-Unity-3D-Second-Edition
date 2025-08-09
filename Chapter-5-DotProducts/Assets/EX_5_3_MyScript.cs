@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EX_5_3_MyScript : MonoBehaviour
 {
-    // Positions: to deine the interval, the test, and projected 
+    // Positions: to deine the interval, the test, and projected
     public GameObject P0 = null;   // Position P0
     public GameObject P1 = null;   // Position P1
     public GameObject Pt = null;   // Position Pt: test position
@@ -63,7 +63,8 @@ public class EX_5_3_MyScript : MonoBehaviour
             Vector3 vt = Pt.transform.localPosition - P0.transform.localPosition;
             Vector3 v1n = v1.normalized;
             float d = Vector3.Dot(vt, v1n);
-            Pon.transform.localPosition = P0.transform.localPosition + d * v1.normalized;
+            Vector3 vOn = d * v1n - vt;
+            Pon.transform.localPosition = Pt.transform.localPosition + vOn;
 
             if ((d >= 0) && (d <= v1.magnitude))
                 Debug.Log("V1.mag=" + v1.magnitude + "  Projected Length=" + d + "  ==> Inside!");
