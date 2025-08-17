@@ -58,7 +58,6 @@ public class EX_5_4_MyScript : MonoBehaviour
     void Update()
     {
         _agent.AgentRadius = _agentBSRadius;
-        _agent.AgentPosition = _agent.transform.position;
         _treasure.TreasurePosition = _treasure.transform.position;
         _treasure.TreasureRadius = _ptBSRadius;
 
@@ -67,9 +66,9 @@ public class EX_5_4_MyScript : MonoBehaviour
         Vector3 v1 = P1.transform.localPosition - P0.transform.localPosition;
         float v1Len = v1.magnitude;
         _agent.transform.position += v1.normalized * _agentSpeed;
-        // _agentVisual.transform.localPosition += v1.normalized * _agentSpeed;
-        // if ((_agentVisual.transform.position - P0.transform.position).sqrMagnitude > (P1.transform.position - P0.transform.position).sqrMagnitude)
-        //     _agentVisual.transform.position = P0.transform.position;
+        _agent.AgentPosition = _agent.transform.position;
+        if ((_agent.transform.position - P0.transform.position).sqrMagnitude > v1Len * v1Len)
+            _agent.transform.position = P0.transform.position;
 
         if (v1Len > float.Epsilon)
         {
@@ -91,6 +90,9 @@ public class EX_5_4_MyScript : MonoBehaviour
                 Pon.transform.localPosition = P0.transform.localPosition + d * v1n;
                 Vector3 von = Pon.transform.localPosition - Pt.transform.localPosition;
                 distance = von.magnitude;
+                float radiusSum = _agent.AgentRadius + _treasure.TreasureRadius;
+                if (distance <= radiusSum)
+                    Debug.Log("Agent intersected Treasure. " + "Distance " + distance + " is equal or less than " + radiusSum);
             }
             float s = distance * kScaleFactor;
             Pon.transform.localScale = new Vector3(s, s, s);
