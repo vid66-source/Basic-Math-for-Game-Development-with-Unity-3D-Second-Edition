@@ -120,14 +120,7 @@ public class EX_5_4_MyScript : MonoBehaviour
             ShowV1.VectorFromTo(pv0, pv1);
         }
         #endregion
-
     }
-
-    private void PosManager(GameObject gameObject, SphereVisualizer sphereVisualizer, BoundingSphere boundingSphere, float radius) {
-        boundingSphere.position = sphereVisualizer.Center = gameObject.transform.position;
-        boundingSphere.radius = sphereVisualizer.Radius = radius;
-    }
-
 }
 
 
