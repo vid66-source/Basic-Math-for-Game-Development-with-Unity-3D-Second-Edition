@@ -7,11 +7,11 @@ public class EX_6_3_MyScript : MonoBehaviour
     #region Identical to EX_6_2
     // Defines two vectors: V1 = P1 - P0, V2 = P2 - P0
     public GameObject P0 = null;   // The three positions
-    public GameObject P1 = null;   // 
-    public GameObject P2 = null;   // 
+    public GameObject P1 = null;   //
+    public GameObject P2 = null;   //
 
     // Plane equation:   P dot vn = D
-    public GameObject Ds;         // To show the D-value 
+    public GameObject Ds;         // To show the D-value
     public GameObject Pn;          // Where Vn crosses the plane
 
     public bool ShowPointOnPlane = true;  // Hide or Show Pt
@@ -19,6 +19,7 @@ public class EX_6_3_MyScript : MonoBehaviour
     public GameObject Pon;          // Point in the Plane, in the Pt direction
     #endregion
     public GameObject P2p;  // The perpendicular version of P2
+    public float vnSize = 3f;
 
     #region For visualizing the vectors
     private MyVector ShowV1, ShowV2, ShowV3;
@@ -33,13 +34,13 @@ public class EX_6_3_MyScript : MonoBehaviour
     {
         #region Identical to EX_6_2
         Debug.Assert(P0 != null);   // Verify proper setting in the editor
-        Debug.Assert(P1 != null);   
+        Debug.Assert(P1 != null);
         Debug.Assert(P2 != null);
         Debug.Assert(Ds != null);
         Debug.Assert(Pn != null);
         Debug.Assert(Pt != null);
         Debug.Assert(Pon != null);
-        #endregion 
+        #endregion
 
         Debug.Assert(P2p != null);
 
@@ -81,8 +82,8 @@ public class EX_6_3_MyScript : MonoBehaviour
         sv.DisablePicking(Pn, true);
         sv.DisablePicking(Pon, true);
         sv.DisablePicking(P2p, true);
-        
-        #endregion 
+
+        #endregion
     }
 
     // Update is called once per frame
@@ -99,7 +100,7 @@ public class EX_6_3_MyScript : MonoBehaviour
         Vector3 vn = Vector3.Cross(v1, v2);
         vn.Normalize();  // keep this vector normalized
         float D = Vector3.Dot(vn, P0.transform.localPosition);
-        
+
         // Showing the plane equation is consistent
         Pn.transform.localPosition = D * vn;
         Ds.transform.localScale = new Vector3(D * 2f, D * 2f, D * 2f); // sphere expects diameter
@@ -118,7 +119,7 @@ public class EX_6_3_MyScript : MonoBehaviour
             {
                 t = D / d;
                 Pon.transform.localPosition = t * Pt.transform.localPosition;
-            } 
+            }
         }
         #endregion
 
@@ -128,6 +129,7 @@ public class EX_6_3_MyScript : MonoBehaviour
         P2p.transform.localPosition = P0.transform.localPosition + v2p;
 
         bool inside = false;
+        bool ptInside = false;
         if (!almostParallel)
         {
             Vector3 von = Pon.transform.localPosition - P0.transform.localPosition;
@@ -139,6 +141,16 @@ public class EX_6_3_MyScript : MonoBehaviour
                 Debug.Log("Inside: Pon is inside of the region defined by V1 and V2");
             else
                 Debug.Log("Outside: Pon is outside of the region defined by V1 and V2");
+
+            Vector3 vt = Pt.transform.localPosition - P0.transform.localPosition;
+            float td1 = Vector3.Dot(vt, v1.normalized);
+            float td2 = Vector3.Dot(vt, v2p.normalized);
+            float td3 = Vector3.Dot(vt, vn.normalized);
+
+            ptInside = ((td1 >= 0) && (td1 <= l1)) && ((td2 >= 0) && (td2 <= l2)) && ((td3 >= 0) && (td3 <= vnSize));
+
+            if (ptInside)
+                Debug.Log("Inside: Pt is inside of the region defined by V1, V2 and vnSize");
         }
         #region  For visualizing the vectors
 
