@@ -15,9 +15,9 @@ public class EX_6_4_MyScript : MonoBehaviour
     public GameObject Pt = null;  // The point to be projected onto the plane
     public GameObject Pl = null;  // Projection of Pt on Vn
     public GameObject Pon = null; // Projection of Pt on the plane
-        
+
     #region For visualizing the vectors
-    private MyVector ShowNormal, ShowPt;    // 
+    private MyVector ShowNormal, ShowPt;    //
     private MyXZPlane ShowPlane; // Plane where XZ lies
     private MyLineSegment ShowPtOnPlane, ShowPtOnN;
     #endregion
@@ -60,7 +60,7 @@ public class EX_6_4_MyScript : MonoBehaviour
         sv.DisablePicking(Pn, true);
         sv.DisablePicking(Pl, true);
         sv.DisablePicking(Pon, true);
-        #endregion 
+        #endregion
     }
 
     // Update is called once per frame
@@ -68,17 +68,17 @@ public class EX_6_4_MyScript : MonoBehaviour
     {
         Vn.Normalize();
         Pn.transform.localPosition = D * this.Vn;
-        bool inFront = (Vector3.Dot(Pt.transform.localPosition, Vn) > D); // Pt infront of the plane
+        // bool inFront = (Vector3.Dot(Pt.transform.localPosition, Vn) > D); // Pt infront of the plane
 
-        Pon.SetActive(inFront);
-        Pl.SetActive(inFront);
+        // Pon.SetActive(inFront);
+        // Pl.SetActive(inFront);
         float d = 0f;
-        if (inFront)
-        {
+        // if (inFront)
+        // {
             d = Vector3.Dot(Pt.transform.localPosition, Vn);
             Pl.transform.localPosition = d * Vn;
             Pon.transform.localPosition = Pt.transform.localPosition - (d - D) * Vn;
-        }
+        // }
 
         #region  For visualizing the vectors
 
@@ -90,12 +90,12 @@ public class EX_6_4_MyScript : MonoBehaviour
         ShowNormal.VectorAt = Vector3.zero;
         ShowNormal.Direction = Vn;
 
-        if (!inFront)
-        {
+        // if (!inFront)
+        // {
             d = Vector3.Dot(Pt.transform.localPosition, Vn);
             Pon.transform.localPosition = Pt.transform.localPosition - (d - D) * Vn;
             Pl.transform.localPosition = d * Vn;
-        }
+        // }
 
         float offset = 1.5f;
         float Dsize = Mathf.Abs(D) + offset;
