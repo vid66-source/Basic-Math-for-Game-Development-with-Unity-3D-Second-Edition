@@ -20,6 +20,7 @@ public class EX_6_4_MyScript : MonoBehaviour{
     private MyVector ShowNormal, ShowPt; //
     private MyXZPlane ShowPlane; // Plane where XZ lies
     private MyLineSegment ShowPtOnPlane, ShowPtOnN;
+    private Vector3 _initialScale;
 
     #endregion
 
@@ -57,6 +58,8 @@ public class EX_6_4_MyScript : MonoBehaviour{
         sv.DisablePicking(Pn, true);
         sv.DisablePicking(Pl, true);
         sv.DisablePicking(Pon, true);
+        _initialScale = Pon.transform.localScale;
+
 
         #endregion
     }
@@ -65,23 +68,27 @@ public class EX_6_4_MyScript : MonoBehaviour{
     void Update(){
         Vn.Normalize();
         Pn.transform.localPosition = D * this.Vn;
-        // bool inFront = (Vector3.Dot(Pt.transform.localPosition, Vn) > D); // Pt infront of the plane
 
-        // Pon.SetActive(inFront);
-        // Pl.SetActive(inFront);
         float d = 0f;
-        // if (inFront)
-        // {
         d = Vector3.Dot(Pt.transform.localPosition, Vn);
         float angleDeg = Mathf.Acos(Vector3.Dot(Vn,Pt.transform.localPosition.normalized )) * Mathf.Rad2Deg;
         Debug.Log("Angle between Vn and Pt:" + angleDeg + "Deg");
 
         bool moreThanHalf = (angleDeg < 90f);
         Pon.SetActive(moreThanHalf);
+        // var sv = UnityEditor.SceneVisibilityManager.instance;
+        // bool dIsNotZiro = (D != 0f);
+        // if (dIsNotZiro){
+        //     sv.DisablePicking(Pn, false);
+        //     Pn =
+        // }
 
         Pl.transform.localPosition = d * Vn;
         Pon.transform.localPosition = Pt.transform.localPosition - (d - D) * Vn;
-        // }
+        float pTPOnMagnitude = Mathf.Abs(d - D);
+        float scaleFactor = 1 + pTPOnMagnitude / 10;
+        Pon.transform.localScale = _initialScale * scaleFactor;
+        Pon.transform.localScale = Vector3.Max(_initialScale, _initialScale * scaleFactor);
 
         #region For visualizing the vectors
 
@@ -93,8 +100,7 @@ public class EX_6_4_MyScript : MonoBehaviour{
         ShowNormal.VectorAt = Vector3.zero;
         ShowNormal.Direction = Vn;
 
-        // if (!inFront)
-        // {
+
         d = Vector3.Dot(Pt.transform.localPosition, Vn);
         Pon.transform.localPosition = Pt.transform.localPosition - (d - D) * Vn;
         Pl.transform.localPosition = d * Vn;
