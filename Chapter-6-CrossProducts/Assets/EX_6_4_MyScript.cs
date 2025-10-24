@@ -70,6 +70,7 @@ public class EX_6_4_MyScript : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        Vector3 VnNorm = Vector3.up;
         if (DefinePlaneByD) {
             Vn.Normalize();
             Pn.transform.localPosition = D * this.Vn;
@@ -80,10 +81,8 @@ public class EX_6_4_MyScript : MonoBehaviour {
         else {
             if (Mathf.Abs(D) < 0.0001f) D = 0.0001f * Mathf.Sign(D == 0 ? 1f : D);
             D = Pn.transform.localPosition.magnitude;
-            Vector3 VnNorm = Pn.transform.localPosition / D;
+            VnNorm = Pn.transform.localPosition / D;
             PtOnVnProjection = Vector3.Dot(Pt.transform.localPosition, VnNorm);
-            Pl.transform.localPosition = PtOnVnProjection * VnNorm;
-            Pn.transform.localPosition = PnPos;
         }
 
         float angleDeg = Mathf.Acos(Vector3.Dot(Vn, Pt.transform.localPosition.normalized)) * Mathf.Rad2Deg;
@@ -111,14 +110,22 @@ public class EX_6_4_MyScript : MonoBehaviour {
         ShowPtOnN.DrawVector = ShowProjections;
         ShowPt.DrawVector = ShowProjections;
 
-        ShowNormal.VectorAt = Vector3.zero;
-        ShowNormal.Direction = Vn;
+        ShowNormal.VectorAt = Vector3.up;
+        if (DefinePlaneByD)
+            ShowNormal.Direction = Vn;
+        else
+            ShowNormal.Direction = VnNorm;
 
-
-        PtOnVnProjection= Vector3.Dot(Pt.transform.localPosition, Vn);
-        Pon.transform.localPosition = Pt.transform.localPosition - (PtOnVnProjection- D) * Vn;
-        Pl.transform.localPosition = PtOnVnProjection* Vn;
-        // }
+        if (DefinePlaneByD){
+            PtOnVnProjection = Vector3.Dot(Pt.transform.localPosition, Vn);
+            Pon.transform.localPosition = Pt.transform.localPosition - (PtOnVnProjection - D) * Vn;
+            Pl.transform.localPosition = PtOnVnProjection * Vn;
+        }
+        else {
+            PtOnVnProjection = Vector3.Dot(Pt.transform.localPosition, VnNorm);
+            Pon.transform.localPosition = Pt.transform.localPosition - (PtOnVnProjection - D) * VnNorm;
+            Pl.transform.localPosition = PtOnVnProjection * VnNorm;
+        }
 
         float offset = 1.5f;
         float Dsize = Mathf.Abs(D) + offset;
@@ -128,18 +135,35 @@ public class EX_6_4_MyScript : MonoBehaviour {
             from = D * Vn;
             Dsize = Mathf.Abs(D) + offset;
         }
+            float useD;
+        if (DefinePlaneByD){
+            useD = Mathf.Max(PtOnVnProjection, Vector3.Dot(Vn, (Pt.transform.localPosition - Pn.transform.localPosition)));
+        }
+        else{
+            useD = Mathf.Max(PtOnVnProjection, Vector3.Dot(VnNorm, (Pt.transform.localPosition - Pn.transform.localPosition)));
+        }
 
-        float useD = Mathf.Max(PtOnVnProjection, Vector3.Dot(Vn, (Pt.transform.localPosition - Pn.transform.localPosition)));
+
         float useSize = Dsize;
         // now consider d
         if ((useD + offset) > Dsize) {
             useSize = useD + offset;
         }
-        else if (useD < 0) {
-            Vector3 toFrom = Pl.transform.localPosition - from;
-            if (Vector3.Dot(toFrom, Vn) < 0f) {
-                from = Pl.transform.localPosition;
-                useSize = Dsize + Pl.transform.localPosition.magnitude;
+        else if (useD < 0)
+        {
+            if (DefinePlaneByD){
+                Vector3 toFrom = Pl.transform.localPosition - from;
+                if (Vector3.Dot(toFrom, Vn) < 0f){
+                    from = Pl.transform.localPosition;
+                    useSize = Dsize + Pl.transform.localPosition.magnitude;
+                }
+            }
+            else{
+                Vector3 toFrom = Pl.transform.localPosition - from;
+                if (Vector3.Dot(toFrom, VnNorm) < 0f){
+                    from = Pl.transform.localPosition;
+                    useSize = Dsize + Pl.transform.localPosition.magnitude;
+                }
             }
         }
 
@@ -147,10 +171,20 @@ public class EX_6_4_MyScript : MonoBehaviour {
         ShowNormal.Magnitude = useSize;
 
         float s = 2f;
-        Vector3 ptTon = PtOnVnProjection* Vn - Pt.transform.localPosition;
-        ShowPtOnN.Direction = ptTon;
-        ShowPtOnN.Magnitude = ptTon.magnitude;
-        ShowPtOnN.VectorAt = Pt.transform.localPosition;
+        Vector3 ptTon = Vector3.up;
+        if (DefinePlaneByD){
+            ptTon = PtOnVnProjection * Vn - Pt.transform.localPosition;
+            ShowPtOnN.Direction = ptTon;
+            ShowPtOnN.Magnitude = ptTon.magnitude;
+            ShowPtOnN.VectorAt = Pt.transform.localPosition;
+        }
+        else{
+            ptTon = PtOnVnProjection * VnNorm - Pt.transform.localPosition;
+            ShowPtOnN.Direction = ptTon;
+            ShowPtOnN.Magnitude = ptTon.magnitude;
+            ShowPtOnN.VectorAt = Pt.transform.localPosition;
+        }
+
 
         ShowPt.VectorFromTo(Vector3.zero, Pt.transform.localPosition);
         Vector3 von = Pon.transform.localPosition - Pn.transform.localPosition;
@@ -158,13 +192,24 @@ public class EX_6_4_MyScript : MonoBehaviour {
         if (s < 2f)
             s = 2f;
 
-        ShowPtOnPlane.VectorFromTo(Pon.transform.localPosition, Pt.transform.localPosition);
-        Pon.transform.localRotation = Quaternion.FromToRotation(Vector3.up, Vn);
+        if (DefinePlaneByD){
+            ShowPtOnPlane.VectorFromTo(Pon.transform.localPosition, Pt.transform.localPosition);
+            Pon.transform.localRotation = Quaternion.FromToRotation(Vector3.up, Vn);
 
-        ShowPlane.PlaneNormal = -Vn;
+            ShowPlane.PlaneNormal = -Vn;
 
-        ShowPlane.Center = Pn.transform.localPosition;
-        ShowPlane.XSize = ShowPlane.ZSize = s;
+            ShowPlane.Center = Pn.transform.localPosition;
+            ShowPlane.XSize = ShowPlane.ZSize = s;
+        }
+        else{
+            ShowPtOnPlane.VectorFromTo(Pon.transform.localPosition, Pt.transform.localPosition);
+            Pon.transform.localRotation = Quaternion.FromToRotation(Vector3.up, VnNorm);
+
+            ShowPlane.PlaneNormal = -VnNorm;
+
+            ShowPlane.Center = Pn.transform.localPosition;
+            ShowPlane.XSize = ShowPlane.ZSize = s;
+        }
 
         #endregion
     }
