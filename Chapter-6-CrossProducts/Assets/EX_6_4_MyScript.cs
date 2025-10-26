@@ -168,14 +168,13 @@ public class EX_6_4_MyScript : MonoBehaviour {
         bool moreThanHalf = (angleDeg < 90f);
         Pon.SetActive(moreThanHalf);
 
-        var sv = UnityEditor.SceneVisibilityManager.instance;
-        bool DIsNotZero = (D != 0f);
-        if (DIsNotZero) {
-            sv.DisablePicking(Pn, false);
-        }
-
         float scaleFactor = 1 + pTPOnMagnitude / 10;
         Pon.transform.localScale = Vector3.Max(_initialScale, _initialScale * scaleFactor);
+
+        bool ptOnTopOfThePlane = Pl.transform.localPosition.magnitude >= D;
+        if (!ptOnTopOfThePlane){
+            Pon.SetActive(false);
+        }
 
         #region For visualizing the vectors
 
