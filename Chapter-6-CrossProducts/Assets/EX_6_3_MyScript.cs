@@ -5,10 +5,13 @@ using UnityEngine;
 public class EX_6_3_MyScript : MonoBehaviour
 {
     #region Identical to EX_6_2
+
+    public Vector3 Direction;
     // Defines two vectors: V1 = P1 - P0, V2 = P2 - P0
     public GameObject P0 = null;   // The three positions
     public GameObject P1 = null;   //
     public GameObject P2 = null;   //
+    public GameObject P3 = null;   //
 
     // Plane equation:   P dot vn = D
     public GameObject Ds;         // To show the D-value
@@ -19,10 +22,11 @@ public class EX_6_3_MyScript : MonoBehaviour
     public GameObject Pon;          // Point in the Plane, in the Pt direction
     #endregion
     public GameObject P2p;  // The perpendicular version of P2
+    public GameObject PVnBound = null;   //
     public float vnSize = 3f;
 
     #region For visualizing the vectors
-    private MyVector ShowV1, ShowV2, ShowV3;
+    private MyVector ShowV1, ShowV2, ShowV3, ShowV4;
     private MyVector ShowVn;
     private MyVector ShowNormal;      // Vn
     private MyXZPlane ShowPlane;      // Plane where XZ lies
@@ -58,6 +62,10 @@ public class EX_6_3_MyScript : MonoBehaviour
         {
             VectorColor = Color.green
         };
+        ShowV3 = new MyVector
+        {
+            VectorColor = Color.blue
+        };
         ShowNormal = new MyVector {
             VectorColor = Color.white
         };
@@ -83,6 +91,7 @@ public class EX_6_3_MyScript : MonoBehaviour
         sv.DisablePicking(Pon, true);
         sv.DisablePicking(P2p, true);
 
+        Direction = Vector3.up;
         #endregion
     }
 
@@ -99,6 +108,7 @@ public class EX_6_3_MyScript : MonoBehaviour
         // Plane equation parameters
         Vector3 vn = Vector3.Cross(v1, v2);
         vn.Normalize();  // keep this vector normalized
+
         float D = Vector3.Dot(vn, P0.transform.localPosition);
 
         // Showing the plane equation is consistent
@@ -125,8 +135,11 @@ public class EX_6_3_MyScript : MonoBehaviour
 
         float l1 = v1.magnitude;
         float l2 = v2.magnitude;
+        float l3 = vnSize;
         Vector3 v2p = l2 * Vector3.Cross(vn, v1).normalized;
+        Vector3 vnBound = l3 * Vector3.Cross(v1, v2).normalized;
         P2p.transform.localPosition = P0.transform.localPosition + v2p;
+        PVnBound.transform.localPosition = P0.transform.localPosition + vnBound;
 
         bool inside = false;
         bool ptInside = false;
@@ -147,7 +160,7 @@ public class EX_6_3_MyScript : MonoBehaviour
             float td2 = Vector3.Dot(vt, v2p.normalized);
             float td3 = Vector3.Dot(vt, vn.normalized);
 
-            ptInside = ((td1 >= 0) && (td1 <= l1)) && ((td2 >= 0) && (td2 <= l2)) && ((td3 >= 0) && (td3 <= vnSize));
+            ptInside = ((td1 >= 0) && (td1 <= l1)) && ((td2 >= 0) && (td2 <= l2)) && ((td3 >= 0) && (td3 <= l3));
 
             if (ptInside)
                 Debug.Log("Inside: Pt is inside of the region defined by V1, V2 and vnSize");
@@ -159,8 +172,8 @@ public class EX_6_3_MyScript : MonoBehaviour
         ShowV3.VectorFromTo(P0.transform.localPosition, P2p.transform.localPosition);
 
         ShowVn.VectorAt = P0.transform.localPosition;
-        ShowVn.Direction = vn;
-        ShowVn.Magnitude = 2f;
+        ShowVn.Direction = vnBound;
+        ShowVn.Magnitude = vnBound.magnitude;
 
         ShowNormal.VectorAt = Vector3.zero;
         ShowNormal.Magnitude = Mathf.Abs(D)+2f;
