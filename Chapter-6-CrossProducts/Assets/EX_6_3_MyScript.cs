@@ -13,6 +13,7 @@ public class EX_6_3_MyScript : MonoBehaviour {
     public GameObject P2 = null; //
     public GameObject P3 = null; //
     public GameObject MyVectorIntersect = null; //
+    public GameObject[] intersectionPoints = new GameObject[6];
 
     // Plane equation:   P dot vn = D
     public GameObject Ds; // To show the D-value
@@ -92,6 +93,10 @@ public class EX_6_3_MyScript : MonoBehaviour {
         sv.DisablePicking(Pon, true);
         sv.DisablePicking(P2p, true);
         MyVectorIntersect.SetActive(false);
+
+        for (int i = 0; i < 6; i++){
+            intersectionPoints[i].SetActive(false);
+        }
 
         Direction = Vector3.up;
 
@@ -184,7 +189,7 @@ public class EX_6_3_MyScript : MonoBehaviour {
                     Debug.Log("Inside: Pt is inside of the region defined by V1, V2 and Vn Size");
             }
 
-            Vector3[] axes = {v1, v2p, v1v2NormalScaled };
+            Vector3[] axes = {v1, v2p, v1v2NormalScaled};
             PlaneInfo[] planes = new PlaneInfo[6];
             for (int i = 0; i < planes.Length; i++){
                 int axisIndex = i / 2;
@@ -218,18 +223,68 @@ public class EX_6_3_MyScript : MonoBehaviour {
                 planes[i] = new PlaneInfo(p0, p1, p2);
             }
 
-            foreach (var plane in planes){
-                float planeDenom = Vector3.Dot(Direction,  plane.Normal);
-                float vectorScale = (plane.D - Vector3.Dot(P3.transform.localPosition, plane.Normal)) / planeDenom;
-                Vector3 pointOnPlane = P3.transform.localPosition + Direction * vectorScale;
-                Vector3 pointInBoundingBox = pointOnPlane - plane.P0;
-                float v1length = plane.V1.magnitude;
-                float v2length = plane.V2.magnitude;
-                float myVectorOnV1 = Vector3.Dot(pointInBoundingBox, plane.V1.normalized);
-                float myVectorOnV2 = Vector3.Dot(pointInBoundingBox, plane.V2.normalized);
-                bool isInside = (myVectorOnV1 >= 0) && (myVectorOnV1 <= v1length) &&  (myVectorOnV2 >= 0) && (myVectorOnV2 <= v2length);
-                if (isInside){
-                    Debug.Log("Inside: MyVector is inside of the region defined by V1 and V2");
+
+            for (int i = 0; i < planes.Length; i++){
+                PlaneInfo plane = planes[i];
+
+                // Перевірка на паралельність
+                float planeDenom = Vector3.Dot(Direction, plane.Normal);
+                bool notParallel = Mathf.Abs(planeDenom) > float.Epsilon;
+
+                if (notParallel){
+                    float vectorScale = (plane.D - Vector3.Dot(P3.transform.localPosition, plane.Normal)) / planeDenom;
+
+                    // Перевірка чи промінь йде до площини (не назад)
+                    if (vectorScale >= 0){
+                        Vector3 pointOnPlane = P3.transform.localPosition + Direction * vectorScale;
+                        Vector3 pointInBoundingBox = pointOnPlane - plane.P0;
+
+                        float v1length = plane.V1.magnitude;
+                        float v2length = plane.V2.magnitude;
+                        float myVectorOnV1 = Vector3.Dot(pointInBoundingBox, plane.V1.normalized);
+                        float myVectorOnV2 = Vector3.Dot(pointInBoundingBox, plane.V2.normalized);
+
+                        bool isInside = (myVectorOnV1 >= 0) && (myVectorOnV1 <= v1length) &&
+                                        (myVectorOnV2 >= 0) && (myVectorOnV2 <= v2length);
+
+                        // Візуалізація
+                        if (isInside){
+                            intersectionPoints[i].transform.localPosition = pointOnPlane;
+                            intersectionPoints[i].SetActive(true);
+                            Debug.Log($"Intersection with plane {i}: {pointOnPlane}");
+                        }
+                        else{
+                            intersectionPoints[i].SetActive(false);
+                        }
+                    }
+                    else{
+                        // Промінь йде в протилежний бік
+                        intersectionPoints[i].SetActive(false);
+                    }
+                }
+                else{
+                    // Промінь паралельний площині
+                    intersectionPoints[i].SetActive(false);
+                }
+            }
+
+            Vector3 closestIntersection = Vector3.zero;
+            float minDistance = float.MaxValue;  // Починаємо з максимального значення
+
+            for (int i = 0; i < intersectionPoints.Length; i++){
+                // Перевірка чи точка активна (валідна)
+                if (intersectionPoints[i].activeSelf){
+                    Vector3 point = intersectionPoints[i].transform.localPosition;
+
+                    // Обчислюємо відстань від початку променя (P3) до точки
+                    float distance = Vector3.Distance(P3.transform.localPosition, point);
+
+                    // Якщо ця точка ближча - зберігаємо її
+                    if (distance < minDistance){
+                        minDistance = distance;
+                        closestIntersection = point;
+                        Debug.Log($"Closest intersection with plane {closestIntersection}");
+                    }
                 }
             }
 
