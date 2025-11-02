@@ -333,7 +333,7 @@ MonoBehaviour:
   Pon: {fileID: 1830880199}
   P2p: {fileID: 1730277422}
   PVnBound: {fileID: 1629385076}
-  vnSize: 3
+  VnSize: 3
 --- !u!4 &266297680
 Transform:
   m_ObjectHideFlags: 0
@@ -1078,7 +1078,7 @@ GameObject:
   - component: {fileID: 1629385078}
   - component: {fileID: 1629385077}
   m_Layer: 0
-  m_Name: PVnBoun
+  m_Name: PVnBound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

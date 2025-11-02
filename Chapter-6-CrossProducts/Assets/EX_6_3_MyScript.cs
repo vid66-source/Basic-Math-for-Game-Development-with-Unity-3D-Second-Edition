@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EX_6_3_MyScript : MonoBehaviour{
+public class EX_6_3_MyScript : MonoBehaviour {
     #region Identical to EX_6_2
 
     public Vector3 Direction;
@@ -26,7 +26,8 @@ public class EX_6_3_MyScript : MonoBehaviour{
 
     public GameObject P2p; // The perpendicular version of P2
     public GameObject PVnBound = null; //
-    public float vnSize = 3f;
+    public float VnSize = 3f;
+
 
     #region For visualizing the vectors
 
@@ -39,7 +40,7 @@ public class EX_6_3_MyScript : MonoBehaviour{
     #endregion
 
     // Start is called before the first frame update
-    void Start(){
+    void Start() {
         #region Identical to EX_6_2
 
         Debug.Assert(P0 != null); // Verify proper setting in the editor
@@ -57,31 +58,31 @@ public class EX_6_3_MyScript : MonoBehaviour{
         #region For visualizing the vectors
 
         // To support visualizing the vectors
-        ShowV1 = new MyVector{
+        ShowV1 = new MyVector {
             VectorColor = Color.cyan
         };
-        ShowV2 = new MyVector{
+        ShowV2 = new MyVector {
             VectorColor = Color.magenta
         };
-        ShowV3 = new MyVector{
+        ShowV3 = new MyVector {
             VectorColor = Color.green
         };
-        ShowV4 = new MyVector{
+        ShowV4 = new MyVector {
             VectorColor = Color.blue
         };
-        ShowNormal = new MyVector{
+        ShowNormal = new MyVector {
             VectorColor = Color.white
         };
-        ShowVn = new MyVector{
+        ShowVn = new MyVector {
             VectorColor = Color.black
         };
-        ShowPlane = new MyXZPlane{
+        ShowPlane = new MyXZPlane {
             PlaneColor = new Color(0.8f, 0.3f, 0.3f, 1.0f),
             XSize = 0.5f,
             YSize = 0.5f,
             ZSize = 0.5f
         };
-        ShowPtLine = new MyLineSegment{
+        ShowPtLine = new MyLineSegment {
             VectorColor = Color.black,
             LineWidth = 0.05f
         };
@@ -98,7 +99,7 @@ public class EX_6_3_MyScript : MonoBehaviour{
     }
 
     // Update is called once per frame
-    void Update(){
+    void Update() {
         #region Identical to EX_6_2
 
         // Computes V1 and V2
@@ -123,11 +124,11 @@ public class EX_6_3_MyScript : MonoBehaviour{
         Pon.SetActive(ShowPointOnPlane);
         float t = 0;
         bool almostParallel = false;
-        if (ShowPointOnPlane){
+        if (ShowPointOnPlane) {
             float d = Vector3.Dot(vn, Pt.transform.localPosition); // distance
             almostParallel = (Mathf.Abs(d) < float.Epsilon);
             Pon.SetActive(!almostParallel);
-            if (!almostParallel){
+            if (!almostParallel) {
                 t = D / d;
                 Pon.transform.localPosition = t * Pt.transform.localPosition;
             }
@@ -135,120 +136,117 @@ public class EX_6_3_MyScript : MonoBehaviour{
 
         #endregion
 
+        bool showIntersection = false;
         float denom = Vector3.Dot(vn, myVector);
         bool linesNotParalel = Mathf.Abs(denom) > float.Epsilon;
-        if (linesNotParalel){
+        if (linesNotParalel) {
             float d = (D - Vector3.Dot(vn, P3.transform.localPosition)) / denom;
 
-            if (d >= 0){
+            if (d >= 0) {
                 MyVectorIntersect.transform.localPosition = P3.transform.localPosition + d * myVector;
 
                 float checkD = Vector3.Dot(MyVectorIntersect.transform.localPosition, vn);
-                bool onPlane = Mathf.Abs(checkD - D) < 0.001f;
-
-                if (onPlane){
-                    MyVectorIntersect.SetActive(true);
-                }
-                else{
-                    MyVectorIntersect.SetActive(false);
-                }
+                showIntersection = Mathf.Abs(checkD - D) < 0.001f;
             }
-            else{
-                MyVectorIntersect.SetActive(false);
-            }
-        }
-        else{
-            MyVectorIntersect.SetActive(false);
-        }
 
-        float l1 = v1.magnitude;
-        float l2 = v2.magnitude;
-        float l3 = vnSize;
-        Vector3 v2p = l2 * Vector3.Cross(vn, v1).normalized;
-        Vector3 vnBound = l3 * Vector3.Cross(v1, v2).normalized;
-        P2p.transform.localPosition = P0.transform.localPosition + v2p;
-        PVnBound.transform.localPosition = P0.transform.localPosition + vnBound;
+            MyVectorIntersect.SetActive(showIntersection);
 
-        bool inside = false;
-        bool ptInside;
-        if (!almostParallel){
-            Vector3 von = Pon.transform.localPosition - P0.transform.localPosition;
-            float d1 = Vector3.Dot(von, v1.normalized);
-            float d2 = Vector3.Dot(von, v2p.normalized);
 
-            inside = ((d1 >= 0) && (d1 <= l1)) && ((d2 >= 0) && (d2 <= l2));
-            if (inside)
-                Debug.Log("Inside: Pon is inside of the region defined by V1 and V2");
-            else
-                Debug.Log("Outside: Pon is outside of the region defined by V1 and V2");
+            float l1 = v1.magnitude;
+            float l2 = v2.magnitude;
+            float l3 = VnSize;
+            Vector3 v2p = l2 * Vector3.Cross(vn, v1).normalized;
+            Vector3 v1v2NormalScaled = l3 * Vector3.Cross(v1, v2).normalized;
+            P2p.transform.localPosition = P0.transform.localPosition + v2p;
+            PVnBound.transform.localPosition = P0.transform.localPosition + v1v2NormalScaled;
 
-            Vector3 vt = Pt.transform.localPosition - P0.transform.localPosition;
-            float td1 = Vector3.Dot(vt, v1.normalized);
-            float td2 = Vector3.Dot(vt, v2p.normalized);
-            float td3 = Vector3.Dot(vt, vn.normalized);
+            bool inside = false;
+            bool ptInside = false;
+            if (!almostParallel) {
+                Vector3 von = Pon.transform.localPosition - P0.transform.localPosition;
+                float d1 = Vector3.Dot(von, v1.normalized);
+                float d2 = Vector3.Dot(von, v2p.normalized);
 
-            ptInside = ((td1 >= 0) && (td1 <= l1)) && ((td2 >= 0) && (td2 <= l2)) && ((td3 >= 0) && (td3 <= l3));
-
-            if (ptInside)
-                Debug.Log("Inside: Pt is inside of the region defined by V1, V2 and vnSize");
-        }
-
-        #region For visualizing the vectors
-
-        ShowV1.VectorFromTo(P0.transform.localPosition, P1.transform.localPosition);
-        ShowV2.VectorFromTo(P0.transform.localPosition, P2.transform.localPosition);
-        ShowV3.VectorFromTo(P0.transform.localPosition, P2p.transform.localPosition);
-        ShowV4.VectorAtDirLength(P3.transform.localPosition, myVector, 10f);
-
-        ShowVn.VectorAt = P0.transform.localPosition;
-        ShowVn.Direction = vnBound;
-        ShowVn.Magnitude = vnBound.magnitude;
-
-        ShowNormal.VectorAt = Vector3.zero;
-        ShowNormal.Magnitude = Mathf.Abs(D) + 2f;
-        ShowNormal.Direction = vn;
-
-        ShowPlane.PlaneNormal = -vn;
-        Vector3 at = P0.transform.localPosition + P1.transform.localPosition + P2.transform.localPosition +
-                     Pn.transform.localPosition;
-        int c = 4;
-
-        float scale = 1.0f;
-        ShowPtLine.DrawVector = ShowPointOnPlane;
-        float da = v1.magnitude * scale;
-        float db = v2.magnitude * scale;
-        float du = Mathf.Max(da, db);
-
-        if (ShowPointOnPlane && (!almostParallel)){
-            Pon.GetComponent<Renderer>().material.color = Color.white;
-            float don = (Pon.transform.localPosition - P0.transform.localPosition).magnitude * scale;
-            at += Pon.transform.localPosition;
-            c++;
-            du = Mathf.Max(du, don);
-
-            // Now the line
-            ShowPtLine.VectorColor = Color.black;
-            if (Vector3.Dot(Pon.transform.localPosition, Pt.transform.localPosition) < 0){
-                ShowPtLine.VectorColor = Color.red;
-                ShowPtLine.VectorFromTo(Pt.transform.localPosition, Pon.transform.localPosition);
-            }
-            else{
-                if (Pon.transform.localPosition.magnitude > Pt.transform.localPosition.magnitude)
-                    ShowPtLine.VectorFromTo(Vector3.zero, Pon.transform.localPosition);
+                inside = ((d1 >= 0) && (d1 <= l1)) && ((d2 >= 0) && (d2 <= l2));
+                if (inside)
+                    Debug.Log("Inside: Pon is inside of the region defined by V1 and V2");
                 else
-                    ShowPtLine.VectorFromTo(Vector3.zero, Pt.transform.localPosition);
+                    Debug.Log("Outside: Pon is outside of the region defined by V1 and V2");
+
+                Vector3 vt = Pt.transform.localPosition - P0.transform.localPosition;
+                float td1 = Vector3.Dot(vt, v1.normalized);
+                float td2 = Vector3.Dot(vt, v2p.normalized);
+                float td3 = Vector3.Dot(vt, vn.normalized);
+
+                ptInside = ((td1 >= 0) && (td1 <= l1)) && ((td2 >= 0) && (td2 <= l2)) && ((td3 >= 0) && (td3 <= l3));
+
+                if (ptInside)
+                    Debug.Log("Inside: Pt is inside of the region defined by V1, V2 and Vn Size");
             }
 
-            if (!inside)
-                Pon.GetComponent<Renderer>().material.color = Color.red;
+            PlaneInfo[] planeArray = new PlaneInfo[5];
+            for (int i = 0; i < planeArray.Length; i++) {
+
+            }
+
+
+            #region For visualizing the vectors
+
+            ShowV1.VectorFromTo(P0.transform.localPosition, P1.transform.localPosition);
+            ShowV2.VectorFromTo(P0.transform.localPosition, P2.transform.localPosition);
+            ShowV3.VectorFromTo(P0.transform.localPosition, P2p.transform.localPosition);
+            ShowV4.VectorAtDirLength(P3.transform.localPosition, myVector, 10f);
+
+            ShowVn.VectorAt = P0.transform.localPosition;
+            ShowVn.Direction = v1v2NormalScaled;
+            ShowVn.Magnitude = v1v2NormalScaled.magnitude;
+
+            ShowNormal.VectorAt = Vector3.zero;
+            ShowNormal.Magnitude = Mathf.Abs(D) + 2f;
+            ShowNormal.Direction = vn;
+
+            ShowPlane.PlaneNormal = -vn;
+            Vector3 at = P0.transform.localPosition + P1.transform.localPosition + P2.transform.localPosition +
+                         Pn.transform.localPosition;
+            int c = 4;
+
+            float scale = 1.0f;
+            ShowPtLine.DrawVector = ShowPointOnPlane;
+            float da = v1.magnitude * scale;
+            float db = v2.magnitude * scale;
+            float du = Mathf.Max(da, db);
+
+            if (ShowPointOnPlane && (!almostParallel)) {
+                Pon.GetComponent<Renderer>().material.color = Color.white;
+                float don = (Pon.transform.localPosition - P0.transform.localPosition).magnitude * scale;
+                at += Pon.transform.localPosition;
+                c++;
+                du = Mathf.Max(du, don);
+
+                // Now the line
+                ShowPtLine.VectorColor = Color.black;
+                if (Vector3.Dot(Pon.transform.localPosition, Pt.transform.localPosition) < 0) {
+                    ShowPtLine.VectorColor = Color.red;
+                    ShowPtLine.VectorFromTo(Pt.transform.localPosition, Pon.transform.localPosition);
+                }
+                else {
+                    if (Pon.transform.localPosition.magnitude > Pt.transform.localPosition.magnitude)
+                        ShowPtLine.VectorFromTo(Vector3.zero, Pon.transform.localPosition);
+                    else
+                        ShowPtLine.VectorFromTo(Vector3.zero, Pt.transform.localPosition);
+                }
+
+                if (!inside)
+                    Pon.GetComponent<Renderer>().material.color = Color.red;
+            }
+
+            if (du < 0.5f)
+                du = 0.5f;
+
+            ShowPlane.XSize = ShowPlane.ZSize = du;
+            ShowPlane.Center = at / c;
+
+            #endregion
         }
-
-        if (du < 0.5f)
-            du = 0.5f;
-
-        ShowPlane.XSize = ShowPlane.ZSize = du;
-        ShowPlane.Center = at / c;
-
-        #endregion
     }
 }
