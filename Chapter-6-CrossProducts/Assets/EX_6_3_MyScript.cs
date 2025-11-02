@@ -139,10 +139,10 @@ public class EX_6_3_MyScript : MonoBehaviour {
         bool showIntersection = false;
         float denom = Vector3.Dot(vn, myVector);
         bool linesNotParalel = Mathf.Abs(denom) > float.Epsilon;
-        if (linesNotParalel) {
+        if (linesNotParalel){
             float d = (D - Vector3.Dot(vn, P3.transform.localPosition)) / denom;
 
-            if (d >= 0) {
+            if (d >= 0){
                 MyVectorIntersect.transform.localPosition = P3.transform.localPosition + d * myVector;
 
                 float checkD = Vector3.Dot(MyVectorIntersect.transform.localPosition, vn);
@@ -162,7 +162,7 @@ public class EX_6_3_MyScript : MonoBehaviour {
 
             bool inside = false;
             bool ptInside = false;
-            if (!almostParallel) {
+            if (!almostParallel){
                 Vector3 von = Pon.transform.localPosition - P0.transform.localPosition;
                 float d1 = Vector3.Dot(von, v1.normalized);
                 float d2 = Vector3.Dot(von, v2p.normalized);
@@ -184,9 +184,53 @@ public class EX_6_3_MyScript : MonoBehaviour {
                     Debug.Log("Inside: Pt is inside of the region defined by V1, V2 and Vn Size");
             }
 
-            PlaneInfo[] planeArray = new PlaneInfo[5];
-            for (int i = 0; i < planeArray.Length; i++) {
+            Vector3[] axes = {v1, v2p, v1v2NormalScaled };
+            PlaneInfo[] planes = new PlaneInfo[6];
+            for (int i = 0; i < planes.Length; i++){
+                int axisIndex = i / 2;
+                bool shifted = (i % 2) == 1;
 
+                Vector3 offset = shifted ? axes[axisIndex] : Vector3.zero;
+
+                Vector3 vec1, vec2;
+                switch (axisIndex){
+                    case 0:
+                        vec1 = v2p;
+                        vec2 = v1v2NormalScaled;
+                        break;
+                    case 1:
+                        vec1 = v1;
+                        vec2 = v1v2NormalScaled;
+                        break;
+                    case 2:
+                        vec1 = v1;
+                        vec2 = v2p;
+                        break;
+                    default:
+                        vec1 = vec2 = Vector3.zero;
+                        break;
+                }
+
+                Vector3 p0 = P0.transform.localPosition + offset;
+                Vector3 p1 = p0 + vec1;
+                Vector3 p2 = p0 + vec2;
+
+                planes[i] = new PlaneInfo(p0, p1, p2);
+            }
+
+            foreach (var plane in planes){
+                float planeDenom = Vector3.Dot(Direction,  plane.Normal);
+                float vectorScale = (plane.D - Vector3.Dot(P3.transform.localPosition, plane.Normal)) / planeDenom;
+                Vector3 pointOnPlane = P3.transform.localPosition + Direction * vectorScale;
+                Vector3 pointInBoundingBox = pointOnPlane - plane.P0;
+                float v1length = plane.V1.magnitude;
+                float v2length = plane.V2.magnitude;
+                float myVectorOnV1 = Vector3.Dot(pointInBoundingBox, plane.V1.normalized);
+                float myVectorOnV2 = Vector3.Dot(pointInBoundingBox, plane.V2.normalized);
+                bool isInside = (myVectorOnV1 >= 0) && (myVectorOnV1 <= v1length) &&  (myVectorOnV2 >= 0) && (myVectorOnV2 <= v2length);
+                if (isInside){
+                    Debug.Log("Inside: MyVector is inside of the region defined by V1 and V2");
+                }
             }
 
 
