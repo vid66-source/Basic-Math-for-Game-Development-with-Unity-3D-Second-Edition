@@ -110,6 +110,7 @@ public class EX_6_4_MyScript : MonoBehaviour {
             Pn.transform.localPosition = D * Vn;
             PtOnVnProjection = Vector3.Dot(Pt.transform.localPosition, Vn);
             Pl.transform.localPosition = PtOnVnProjection * Vn;
+
             Pon.transform.localPosition = Pt.transform.localPosition - (PtOnVnProjection - D) * Vn;
         }
         else if (DefinePlanePn){
@@ -133,7 +134,7 @@ public class EX_6_4_MyScript : MonoBehaviour {
             Vector3 v2 = P2.transform.localPosition - P0.transform.localPosition;
             Vector3 P1P2Normal = -Vector3.Cross(v1, v2);
             VnNorm = P1P2Normal.normalized;
-            Vector3 P1NormalNormal = -Vector3.Cross(v1, VnNorm);
+            Vector3 P1XNormalNormal = -Vector3.Cross(v1, VnNorm);
             D = Vector3.Dot(VnNorm, P0.transform.localPosition);
             Pn.transform.localPosition = D * VnNorm;
             PtOnVnProjection = Vector3.Dot(Pt.transform.localPosition, VnNorm);
@@ -147,14 +148,14 @@ public class EX_6_4_MyScript : MonoBehaviour {
             ShowP2.VectorFromTo(P0.transform.localPosition, P2.transform.localPosition);
             ShowP1P2Normal.Direction = P1P2Normal;
             ShowP1P2Normal.VectorAtDirLength(P0.transform.localPosition, P1P2Normal, P1P2Normal.magnitude);
-            ShowP1NormalNormal.Direction = P1NormalNormal;
-            ShowP1NormalNormal.VectorAtDirLength(P0.transform.localPosition, P1NormalNormal, P1NormalNormal.magnitude);
-            Debug.Log("V1 Length:" + v1.magnitude + ". P1NormalNormal Length:" + P1NormalNormal.magnitude);
+            ShowP1NormalNormal.Direction = P1XNormalNormal;
+            ShowP1NormalNormal.VectorAtDirLength(P0.transform.localPosition, P1XNormalNormal, P1XNormalNormal.magnitude);
+            Debug.Log("V1 Length:" + v1.magnitude + ". P1NormalNormal Length:" + P1XNormalNormal.magnitude);
 
             Vector3 P0Pon = Pon.transform.localPosition - P0.transform.localPosition;
             float P0PonProjOnP1 = Vector3.Dot(P0Pon, v1.normalized);
-            float P0PonProjOnP1NormalNormal = Vector3.Dot(P0Pon, P1NormalNormal.normalized);
-            bool boundInsideOutside = (P0PonProjOnP1 <= v1.magnitude && P0PonProjOnP1 >= 0) && (P0PonProjOnP1NormalNormal <= P1NormalNormal.magnitude && P0PonProjOnP1NormalNormal >= 0);;
+            float P0PonProjOnP1NormalNormal = Vector3.Dot(P0Pon, P1XNormalNormal.normalized);
+            bool boundInsideOutside = (P0PonProjOnP1 <= v1.magnitude && P0PonProjOnP1 >= 0) && (P0PonProjOnP1NormalNormal <= P1XNormalNormal.magnitude && P0PonProjOnP1NormalNormal >= 0);;
             if (boundInsideOutside){
                 Debug.Log("P0PonProjOnP1:" + P0PonProjOnP1 + ". P0PonProjOnP1NormalNormal:" + P0PonProjOnP1NormalNormal + ". Pon INSIDE 2D bound");;
             }
