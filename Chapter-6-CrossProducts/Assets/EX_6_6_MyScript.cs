@@ -14,12 +14,12 @@ public class EX_6_6_MyScript : MonoBehaviour
 
     public GameObject P0 = null, P1 = null;  // The line segment
     public GameObject Pon = null;  // The intersection position
-    #endregion 
+    #endregion
     public GameObject Pl = null;  // Projection of P0 on Vn
     public GameObject Pr = null;  // reflected position of P0
-    
+
     #region For visualizing the vectors
-    private MyVector ShowNormal, ShowNormalAtPon;    // 
+    private MyVector ShowNormal, ShowNormalAtPon;    //
     private MyXZPlane ShowPlane; // Plane where XZ lies
     private MyLineSegment ShowLine;
     private MyLineSegment ShowRestOfLine;
@@ -80,7 +80,7 @@ public class EX_6_6_MyScript : MonoBehaviour
         sv.DisablePicking(Pon, true);
         sv.DisablePicking(Pl, true);
         sv.DisablePicking(Pr, true);
-        #endregion 
+        #endregion
     }
 
     // Update is called once per frame
@@ -90,14 +90,14 @@ public class EX_6_6_MyScript : MonoBehaviour
         Vn.Normalize();
         Pn.transform.localPosition = D * Vn;
 
-        // Compute the line segment direction 
+        // Compute the line segment direction
         Vector3 v1 = P1.transform.localPosition - P0.transform.localPosition;
         if (v1.magnitude < float.Epsilon)
         {
             Debug.Log("Ill defined line (magnitude of zero). Not processed");
             return;
         }
-        
+
         float denom = Vector3.Dot(Vn, v1);
         bool lineNotParallelPlane = (Mathf.Abs(denom) > float.Epsilon);  // Vn is not perpendicular with V1
         float d = 0;
@@ -113,18 +113,17 @@ public class EX_6_6_MyScript : MonoBehaviour
         {
             Debug.Log("Line is almost parallel to the plane, no intersection!");
         }
-        #endregion 
+        #endregion
 
         float h = 0;
-        Vector3 von, m;
+        Vector3 von, vr;
         Pr.SetActive(lineNotParallelPlane);
-        if (lineNotParallelPlane) 
+        if (lineNotParallelPlane)
         {
             von = P0.transform.localPosition - Pon.transform.localPosition;
             h = Vector3.Dot(von, Vn);
-            Pl.transform.localPosition = Pon.transform.localPosition + h * Vn;
-            m = P0.transform.localPosition - Pl.transform.localPosition;
-            Pr.transform.localPosition = Pl.transform.localPosition - m; ;
+            vr = 2 * h * Vn - von;
+            Pr.transform.position = Pon.transform.position + vr;
             Debug.Log("Incoming object position P0:" + P0.transform.localPosition + " Reflected Position Pr:" + Pr.transform.localPosition);
         } else
         {
