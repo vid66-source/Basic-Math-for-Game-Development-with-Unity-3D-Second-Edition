@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class EX_6_6_MyScript : MonoBehaviour{
     #region identical to EX_6_5
@@ -8,12 +9,15 @@ public class EX_6_6_MyScript : MonoBehaviour{
     public bool ShowAxisFrame = true;
 
     // Plane Equation: P dot Vn = D
-    public Vector3 Vn = Vector3.up;
-    public float D = 2f;
+    private Vector3 Vn = Vector3.up;
+    private float D = 2f;
     public GameObject Pn = null; // The point where plane normal passes
 
     public GameObject P0 = null, P1 = null; // The line segment
     public GameObject Pon = null; // The intersection position
+    public GameObject Pa = null; // The intersection position
+    public GameObject Pb = null; // The intersection position
+    public GameObject Pc = null; // The intersection position
 
     #endregion
 
@@ -22,12 +26,14 @@ public class EX_6_6_MyScript : MonoBehaviour{
 
     #region For visualizing the vectors
 
-    private MyVector ShowNormal, ShowNormalAtPon; //
+    private MyVector ShowNormal, ShowNormalAtPon, ShowNormalAtPa, ShowNormalForBBTest; //
     private MyXZPlane ShowPlane; // Plane where XZ lies
     private MyLineSegment ShowLine;
     private MyLineSegment ShowRestOfLine;
     private MyLineSegment ShowReflect;
     private MyVector ShowM;
+    private MyVector ShowVb;
+    private MyVector ShowVc;
 
     #endregion
 
@@ -52,8 +58,20 @@ public class EX_6_6_MyScript : MonoBehaviour{
         ShowNormal = new MyVector{
             VectorColor = Color.white
         };
+        ShowNormalAtPa = new MyVector{
+            VectorColor = Color.lightSalmon
+        };
+        ShowNormalForBBTest = new MyVector{
+            VectorColor = Color.darkSlateGray
+        };
         ShowM = new MyVector{
             VectorColor = Color.green
+        };
+        ShowVb = new MyVector{
+            VectorColor = Color.darkOrange
+        };
+        ShowVc = new MyVector{
+            VectorColor = Color.navyBlue
         };
         ShowNormalAtPon = new MyVector{
             VectorColor = Color.white
@@ -87,9 +105,14 @@ public class EX_6_6_MyScript : MonoBehaviour{
 
     // Update is called once per frame
     void Update(){
-        #region identical to EX_6_5
 
+        Vector3 vb = Pb.transform.localPosition - Pa.transform.localPosition;
+        Vector3 vc = Pc.transform.localPosition - Pa.transform.localPosition;
+
+        Vn = -Vector3.Cross(vb, vc);
         Vn.Normalize();
+        D = Vector3.Dot(Pa.transform.localPosition, Vn);
+
         Pn.transform.localPosition = D * Vn;
 
         // Compute the line segment direction
@@ -113,24 +136,31 @@ public class EX_6_6_MyScript : MonoBehaviour{
             Debug.Log("Line is almost parallel to the plane, no intersection!");
         }
 
-        #endregion
 
         float h = 0;
         Vector3 von, vr;
         Pr.SetActive(lineNotParallelPlane);
+        Vector3 vbCrossVn = Vector3.Cross(vb, Vn);
+        float length1 = vb.magnitude;
+        float length2 = vc.magnitude;
+        Vector3 vForBB = Pon.transform.localPosition -  Pa.transform.localPosition;
+        float vForBBOnVb = Vector3.Dot(vForBB, vb.normalized);
+        float vForBBOnVc = Vector3.Dot(vForBB, vc.normalized);
+        bool showReflect = vForBBOnVb >= 0 && vForBBOnVb <= length1 &&
+                           vForBBOnVc >= 0 && vForBBOnVc <= length2;
         if (lineNotParallelPlane){
             von = P0.transform.localPosition - Pon.transform.localPosition;
             h = Vector3.Dot(von, Vn);
             vr = 2 * h * Vn - von;
             float p0onVn = Vector3.Dot(P0.transform.localPosition, Vn);
             float p1onVn = Vector3.Dot(P1.transform.localPosition, Vn);
-            if ((p0onVn > D) && (p1onVn < D)){
-                Pr.transform.position = Pon.transform.position + vr;
+            if ((p0onVn > D) && (p1onVn < D) && showReflect){
+                Pr.transform.localPosition = Pon.transform.localPosition + vr;
                 Debug.Log("Incoming object position P0:" + P0.transform.localPosition + " Reflected Position Pr:" +
                           Pr.transform.localPosition);
             }
             else{
-                Pr.transform.position = Pon.transform.position;
+                Pr.transform.localPosition = Pon.transform.localPosition;
                 Debug.Log("P0 is under the Plane or P1 is above Plane");
             }
         }
@@ -156,6 +186,8 @@ public class EX_6_6_MyScript : MonoBehaviour{
         ShowNormal.Magnitude = size;
 
         ShowLine.VectorFromTo(P0.transform.localPosition, P1.transform.localPosition);
+        ShowVb.VectorFromTo(Pa.transform.localPosition, Pb.transform.localPosition);
+        ShowVc.VectorFromTo(Pa.transform.localPosition, Pc.transform.localPosition);
         ShowRestOfLine.DrawVector = false;
         if (lineNotParallelPlane && ((d < 0f) || (d > 1f))){
             ShowRestOfLine.DrawVector = true;
@@ -188,6 +220,13 @@ public class EX_6_6_MyScript : MonoBehaviour{
 
         ShowReflect.DrawVector = lineNotParallelPlane;
         ShowNormalAtPon.DrawVector = lineNotParallelPlane;
+        ShowNormalAtPa.VectorAt = Pa.transform.localPosition;
+        ShowNormalAtPa.Direction = Vn;
+        ShowNormalAtPa.Magnitude = h + 1f;
+        ShowNormalForBBTest.VectorAt = Pa.transform.localPosition;
+        ShowNormalForBBTest.Direction = vbCrossVn;
+        ShowNormalForBBTest.Magnitude = h + 1f;
+
         if (ShowReflect.DrawVector){
             ShowReflect.VectorFromTo(Pon.transform.localPosition, Pr.transform.localPosition);
             ShowNormalAtPon.VectorAt = Pon.transform.localPosition;
