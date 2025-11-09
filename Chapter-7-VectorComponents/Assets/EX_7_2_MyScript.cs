@@ -52,7 +52,7 @@ public class EX_7_2_MyScript : MonoBehaviour
         Vector3 Vx = Vector3.Cross(Vy, Vz);
         RefFrameToDraw.SetFrame(Vx, Vy, Vz);
 
-        // Default original 
+        // Default original
         DrawDefaultP = new MyVector
         {
             VectorColor = Color.white
@@ -66,13 +66,13 @@ public class EX_7_2_MyScript : MonoBehaviour
 
         var sv = UnityEditor.SceneVisibilityManager.instance;
         sv.DisablePicking(Pr, true);
-        #endregion 
+        #endregion
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Step 1: Derive the axis frame 
+        // Step 1: Derive the axis frame
         Vector3 origin = Po.transform.localPosition;
         Vector3 Vt = Pt.transform.localPosition - origin;
         Vector3 zDir = (Pz.transform.localPosition - origin).normalized;
@@ -86,8 +86,8 @@ public class EX_7_2_MyScript : MonoBehaviour
         float vz = Vector3.Dot(V, zDir);
 
         // Step 3: Compute Pt position from the components
-        Pr.transform.localPosition = origin + vx * xDir + vy * yDir + vz * zDir;
-        
+        Pr.transform.localPosition = origin + vx * xDir + vy * yDir + (vz + 2) * zDir;
+
 
         #region  For visualizing the vectors
         // Show/hide the non-collinear positions
