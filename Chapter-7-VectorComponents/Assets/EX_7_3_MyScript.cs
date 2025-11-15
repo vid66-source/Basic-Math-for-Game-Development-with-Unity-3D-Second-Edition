@@ -8,13 +8,13 @@ public class EX_7_3_MyScript : MonoBehaviour
     public GameObject Pt = null;    // x-direction of frame
     public GameObject Pz = null;    // z-direction of frame
 
-    public GameObject P1 = null;    // Position for manipulation 
+    public GameObject P1 = null;    // Position for manipulation
     public GameObject P2 = null;    // V from P1
     public GameObject Pr = null;    // From derived vector
     public float vx = 3.0f; // Component values
     public float vy = 2.0f;
     public float vz = 1.0f;
-    
+
     public bool DrawCurrentFrame = true;
     public bool DrawComponents = true; // Draw toggles
     public bool DrawCartesian = false;
@@ -31,12 +31,12 @@ public class EX_7_3_MyScript : MonoBehaviour
     void Start()
     {
         Debug.Assert(P1 != null);   // Verify proper setting in the editor
-        Debug.Assert(P2 != null); 
+        Debug.Assert(P2 != null);
         Debug.Assert(Pr != null);
         Debug.Assert(Po != null);
         Debug.Assert(Pt != null);
         Debug.Assert(Pz != null);
-        
+
         #region For visualizing the vectors
         DrawP1 = new MyVector {
             VectorColor = Color.black,
@@ -105,7 +105,7 @@ public class EX_7_3_MyScript : MonoBehaviour
 
         P2.transform.localPosition = P1.transform.localPosition + new Vector3(vx, vy, vz);
         Pr.transform.localPosition = P2.transform.localPosition;
-        #endregion 
+        #endregion
     }
 
     // Update is called once per frame
@@ -117,7 +117,7 @@ public class EX_7_3_MyScript : MonoBehaviour
         Vector3 zDir = (Pz.transform.localPosition - origin).normalized;
         Vector3 yDir = Vector3.Cross(zDir, Vt).normalized;
         Vector3 xDir = Vector3.Cross(yDir, zDir).normalized;
-        
+
         // Step 2: Compute vector components if necessary
         if (VectorFromP1P2) {
             Vector3 V1 = P1.transform.localPosition - origin;
@@ -134,7 +134,7 @@ public class EX_7_3_MyScript : MonoBehaviour
             vx = vx2 - vx1;
             vy = vy2 - vy1;
             vz = vz2 - vz1;
-        } 
+        }
 
         Debug.Log("Component values: vx=" + vx + " vy=" + vy + " vz=" + vz);
 
@@ -142,7 +142,7 @@ public class EX_7_3_MyScript : MonoBehaviour
         Vector3 V = vx * xDir + vy * yDir + vz * zDir;
         // Derive Pr position from computed vector
         Pr.transform.localPosition = P1.transform.localPosition + V;
-        // P1.transform.localPosition += 0.001f * V.normalized;
+        P1.transform.localPosition += 0.001f * V.normalized;
         // What does the above do?
 
         #region  For visualizing the vectors
@@ -151,7 +151,7 @@ public class EX_7_3_MyScript : MonoBehaviour
         Pt.SetActive(DrawCurrentFrame);
         Pz.SetActive(DrawCurrentFrame);
 
-        P2.SetActive(VectorFromP1P2);           
+        P2.SetActive(VectorFromP1P2);
         if (!VectorFromP1P2)
             P2.transform.localPosition = Pr.transform.localPosition;
 
