@@ -8,19 +8,16 @@ public class EX_8_2_MyScript : MonoBehaviour
 
     public GameObject Pr = null;    // rotated position
     public GameObject A = null;   // The axis of rotation
-    public GameObject AInv = null;   // The axis of rotation
     public float Theta = 30.0f;
     public bool DrawQuaternion = true;
 
     public GameObject Pr1 = null;    // rotated position
     public GameObject A1 = null;   // Axis for second rotation
-    public GameObject A1Inv = null;   // Axis for second rotation
     public float Theta1 = 40f;
     public bool DrawQuaternion1 = true;
 
     public GameObject Pr2 = null;    // rotated position
     public GameObject A2 = null;   // Axis for third rotation
-    public GameObject A2Inv = null;   // Axis for third rotation
     public float Theta2 = 50f;
     public bool DrawQuaternion2 = true;
 
