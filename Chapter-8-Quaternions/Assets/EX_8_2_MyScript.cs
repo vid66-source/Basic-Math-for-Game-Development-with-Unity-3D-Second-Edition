@@ -8,16 +8,19 @@ public class EX_8_2_MyScript : MonoBehaviour
 
     public GameObject Pr = null;    // rotated position
     public GameObject A = null;   // The axis of rotation
+    public GameObject AInv = null;   // The axis of rotation
     public float Theta = 30.0f;
     public bool DrawQuaternion = true;
 
     public GameObject Pr1 = null;    // rotated position
     public GameObject A1 = null;   // Axis for second rotation
+    public GameObject A1Inv = null;   // Axis for second rotation
     public float Theta1 = 40f;
     public bool DrawQuaternion1 = true;
 
     public GameObject Pr2 = null;    // rotated position
     public GameObject A2 = null;   // Axis for third rotation
+    public GameObject A2Inv = null;   // Axis for third rotation
     public float Theta2 = 50f;
     public bool DrawQuaternion2 = true;
 
@@ -33,7 +36,7 @@ public class EX_8_2_MyScript : MonoBehaviour
     {
         Debug.Assert(Pi != null); // Verify proper setting in the editor
         Debug.Assert(Pr != null);
-        Debug.Assert(A != null);   
+        Debug.Assert(A != null);
         Debug.Assert(Pr1 != null);
         Debug.Assert(A1 != null);   // Verify proper setting in the editor
         Debug.Assert(Pr2 != null);
@@ -62,24 +65,33 @@ public class EX_8_2_MyScript : MonoBehaviour
         sv.DisablePicking(Pr1, true);
         sv.DisablePicking(Pr2, true);
         sv.DisablePicking(Pc, true);
-        #endregion 
+        #endregion
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        Vector4 q = QFromAngleAxis(Theta, A.transform.localPosition);  
+    void Update(){
+
+        Vector4 q = QFromAngleAxis(Theta, A.transform.localPosition);
         Vector4 q1 = QFromAngleAxis(Theta1, A1.transform.localPosition);
         Vector4 q2 = QFromAngleAxis(Theta2, A2.transform.localPosition);
+        Vector4 qInv = new Vector4(-q.x, -q.y, -q.z, q.w);
+        Vector4 q1Inv = new Vector4(-q1.x, -q1.y, -q1.z, q1.w);
+        Vector4 q2Inv = new Vector4(-q2.x, -q2.y, -q2.z, q2.w);
+
 
         Pr.transform.localPosition = QRotation(q, Pi.transform.localPosition);
-        Pr1.transform.localPosition = QRotation(q1, Pr.transform.localPosition);       
+        Pr1.transform.localPosition = QRotation(q1, Pr.transform.localPosition);
         Pr2.transform.localPosition = QRotation(q2, Pr1.transform.localPosition);
+
+        Pr2.transform.localPosition = QRotation(q2Inv, Pr2.transform.localPosition);
+        Pr1.transform.localPosition = QRotation(q1Inv, Pr1.transform.localPosition);
+        Pr.transform.localPosition = QRotation(qInv, Pr.transform.localPosition);
 
         Vector4 qc = QMultiplication(q1, q);
         qc = QMultiplication(q2, qc);
         Pc.transform.localPosition = QRotation(qc, Pi.transform.localPosition);
-        
+
+
         #region  For visualizing the vectors
         // To avoid confusion
         A.SetActive(DrawQuaternion);
@@ -111,7 +123,7 @@ public class EX_8_2_MyScript : MonoBehaviour
         Vector4 r;
         r.x = q1.w*q2.x + q1.x*q2.w + q1.y*q2.z - q1.z*q2.y;
         r.y = q1.w*q2.y - q1.x*q2.z + q1.y*q2.w + q1.z*q2.x;
-        r.z = q1.w*q2.z + q1.x*q2.y - q1.y*q2.x + q1.z*q2.w; 
+        r.z = q1.w*q2.z + q1.x*q2.y - q1.y*q2.x + q1.z*q2.w;
         r.w = q1.w*q2.w - q1.x*q2.x - q1.y*q2.y - q1.z*q2.z;
         return r;
     }
@@ -119,13 +131,14 @@ public class EX_8_2_MyScript : MonoBehaviour
     // Rotate p based on the quaternion q
     Vector3 QRotation(Vector4 qr, Vector3 p) {
         Vector4 pq = new Vector4(p.x, p.y, p.z, 0);
-        Vector4 qr_inv = new Vector4(-qr.x, -qr.y, -qr.z, qr.w); 
+        Vector4 qr_inv = new Vector4(-qr.x, -qr.y, -qr.z, qr.w);
                 // q-inv: is rotate by the same axis by -theta OR
                 //        =rotate by the -axis by theta
                 // in either case: it is the above;
-        
+
         pq = QMultiplication(qr, pq);
-        pq = QMultiplication(pq, qr_inv); 
+        pq = QMultiplication(pq, qr_inv);
         return new Vector3(pq.x, pq.y, pq.z);
     }
+
 }
