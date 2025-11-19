@@ -71,6 +71,7 @@ public class EX_8_2_MyScript : MonoBehaviour
         Vector4 q = QFromAngleAxis(Theta, A.transform.localPosition);
         Vector4 q1 = QFromAngleAxis(Theta1, A1.transform.localPosition);
         Vector4 q2 = QFromAngleAxis(Theta2, A2.transform.localPosition);
+
         Vector4 qInv = new Vector4(-q.x, -q.y, -q.z, q.w);
         Vector4 q1Inv = new Vector4(-q1.x, -q1.y, -q1.z, q1.w);
         Vector4 q2Inv = new Vector4(-q2.x, -q2.y, -q2.z, q2.w);
