@@ -72,24 +72,41 @@ public class EX_8_2_MyScript : MonoBehaviour
         Vector4 q1 = QFromAngleAxis(Theta1, A1.transform.localPosition);
         Vector4 q2 = QFromAngleAxis(Theta2, A2.transform.localPosition);
 
+        float negAngle = -Theta;
+        float negAngle1 = -Theta1;
+        float negAngle2 = -Theta2;
+
+        Vector4 qInvWithAngle = QFromAngleAxis(negAngle, A.transform.localPosition);
+        Vector4 q1InvWithAngle = QFromAngleAxis(negAngle1, A1.transform.localPosition);
+        Vector4 q2InvWithAngle = QFromAngleAxis(negAngle2, A2.transform.localPosition);
+
+
         Vector4 qInv = new Vector4(-q.x, -q.y, -q.z, q.w);
         Vector4 q1Inv = new Vector4(-q1.x, -q1.y, -q1.z, q1.w);
         Vector4 q2Inv = new Vector4(-q2.x, -q2.y, -q2.z, q2.w);
 
+        Vector3 startPos = Pi.transform.localPosition;
 
-        Pr.transform.localPosition = QRotation(q, Pi.transform.localPosition);
-        Pr1.transform.localPosition = QRotation(q1, Pr.transform.localPosition);
-        Pr2.transform.localPosition = QRotation(q2, Pr1.transform.localPosition);
+        Vector3 pos_Pr = QRotation(q, startPos);
+        Vector3 pos_Pr1 = QRotation(q1, pos_Pr);
+        Vector3 pos_Pr2 = QRotation(q2, pos_Pr1);
 
-        Pr2.transform.localPosition = QRotation(q2Inv, Pr2.transform.localPosition);
-        Pr1.transform.localPosition = QRotation(q1Inv, Pr1.transform.localPosition);
-        Pr.transform.localPosition = QRotation(qInv, Pr.transform.localPosition);
+        Vector3 back_Pr2 = QRotation(q2Inv, pos_Pr2);
+        Vector3 back_Pr1 = QRotation(q1Inv, back_Pr2);
+        Vector3 back_Pr = QRotation(qInv, back_Pr1);
+
+        Pr.transform.localPosition = back_Pr;
+        Pr1.transform.localPosition = back_Pr;
+        Pr2.transform.localPosition = back_Pr;
+
 
         Vector4 qc = QMultiplication(q1, q);
         qc = QMultiplication(q2, qc);
         Pc.transform.localPosition = QRotation(qc, Pi.transform.localPosition);
 
-
+        Vector4 qcInv = QMultiplication(q1InvWithAngle, q2InvWithAngle);
+        qcInv = QMultiplication(qInvWithAngle, qcInv);
+        Pc.transform.localPosition = QRotation(qcInv, Pc.transform.localPosition);
         #region  For visualizing the vectors
         // To avoid confusion
         A.SetActive(DrawQuaternion);
