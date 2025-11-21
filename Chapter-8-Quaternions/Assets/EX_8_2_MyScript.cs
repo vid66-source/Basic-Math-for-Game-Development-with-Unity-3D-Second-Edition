@@ -92,6 +92,7 @@ public class EX_8_2_MyScript : MonoBehaviour
         Vector3 pos_Pr1 = QRotation(q1, pos_Pr);
         // Vector3 pos_Pr2 = QRotation(q2, pos_Pr1);
 
+
         // Vector3 back_Pr2 = QRotation(q2Inv, pos_Pr2);
         // Vector3 back_Pr1 = QRotation(q1Inv, back_Pr2);
         // Vector3 back_Pr = QRotation(qInv, back_Pr1);
