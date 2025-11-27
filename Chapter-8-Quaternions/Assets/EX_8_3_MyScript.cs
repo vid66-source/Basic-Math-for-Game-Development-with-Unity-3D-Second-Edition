@@ -17,7 +17,7 @@ public class EX_8_3_MyScript : MonoBehaviour
 
     public bool DrawQuaternion = true;
     public PcPositionMode NextPcFrom = PcPositionMode.FromPc;
-    
+
     private float kDeltaTheta = 30f;
     private const float kSmallAngle = 1f;
 
@@ -36,7 +36,7 @@ public class EX_8_3_MyScript : MonoBehaviour
         Debug.Assert(P2 != null);
         Debug.Assert(Pc != null);
         Pc.transform.localPosition = P1.transform.localPosition;
-        
+
         #region For visualizing the vectors
         // To support visualizing the vectors
         ShowQuat = new MyQuaternion
@@ -53,7 +53,7 @@ public class EX_8_3_MyScript : MonoBehaviour
         };
         var sv = UnityEditor.SceneVisibilityManager.instance;
         sv.DisablePicking(Pc, true);
-        #endregion 
+        #endregion
     }
 
     // Update is called once per frame
@@ -75,26 +75,36 @@ public class EX_8_3_MyScript : MonoBehaviour
         float alpha = 0f;
         Vector3 axis = Vector3.zero;
         Vector3 Pf = Vector3.zero;
+        Vector4 q = Vector4.zero;
         if ((theta2 > kSmallAngle)) {
             switch (NextPcFrom) {
                 case PcPositionMode.FromPc:
                     alpha = kDeltaTheta * Time.deltaTime;
                     axis = Vector3.Cross(Vcn, V2n);
                     Pf = Vcn;
+                    q = QFromAngleAxis(alpha, axis);
+                    Pc.transform.localPosition = QRotation(q, Pf);
                 break;
                 case PcPositionMode.FromP1:
-                    alpha = theta1 + (kDeltaTheta * Time.deltaTime);
-                    axis = Vector3.Cross(V1n, V2n);
+                    float alpha1 = theta1;
+                    Vector3 axis1 = Vector3.Cross(V1n, V2n);
+                    Vector4 q1 = QFromAngleAxis(alpha1, axis1);
+                    alpha = kDeltaTheta * Time.deltaTime;
+                    axis = axis1;
+                    q = QFromAngleAxis(alpha, axis);
+                    Vector4 qc = QMultiplication(q, q1);
                     Pf = V1n;
+                    Pc.transform.localPosition = QRotation(qc, Pf);
                 break;
                 case PcPositionMode.FromP2:
                     alpha = theta2 - (kDeltaTheta * Time.deltaTime);
                     axis = Vector3.Cross(V2n, V1n);
                     Pf = V2n;
+                    q = QFromAngleAxis(alpha, axis);
+                    Pc.transform.localPosition = QRotation(q, Pf);
                 break;
-            }           
-            Vector4 q = QFromAngleAxis(alpha, axis);
-            Pc.transform.localPosition = QRotation(q, Pf);
+            }
+
         } else {
             Pc.transform.localPosition = P1.transform.localPosition;
         }
@@ -137,7 +147,7 @@ public class EX_8_3_MyScript : MonoBehaviour
         Vector4 r;
         r.x = q1.w*q2.x + q1.x*q2.w + q1.y*q2.z - q1.z*q2.y;
         r.y = q1.w*q2.y - q1.x*q2.z + q1.y*q2.w + q1.z*q2.x;
-        r.z = q1.w*q2.z + q1.x*q2.y - q1.y*q2.x + q1.z*q2.w; 
+        r.z = q1.w*q2.z + q1.x*q2.y - q1.y*q2.x + q1.z*q2.w;
         r.w = q1.w*q2.w - q1.x*q2.x - q1.y*q2.y - q1.z*q2.z;
         return r;
     }
@@ -145,13 +155,13 @@ public class EX_8_3_MyScript : MonoBehaviour
     // Rotate p based on the quaternion q
     Vector3 QRotation(Vector4 qr, Vector3 p) {
         Vector4 pq = new Vector4(p.x, p.y, p.z, 0);
-        Vector4 qr_inv = new Vector4(-qr.x, -qr.y, -qr.z, qr.w); 
+        Vector4 qr_inv = new Vector4(-qr.x, -qr.y, -qr.z, qr.w);
                 // q-inv: is rotate by the same axis by -theta OR
                 //        =rotate by the -axis by theta
                 // in either case: it is the above;
-        
+
         pq = QMultiplication(qr, pq);
-        pq = QMultiplication(pq, qr_inv); 
+        pq = QMultiplication(pq, qr_inv);
         return new Vector3(pq.x, pq.y, pq.z);
     }
 
