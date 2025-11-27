@@ -17,6 +17,7 @@ public class EX_8_3_MyScript : MonoBehaviour
 
     public bool DrawQuaternion = true;
     public PcPositionMode NextPcFrom = PcPositionMode.FromPc;
+    public bool P1MoveToP2 = true;
 
     private float kDeltaTheta = 30f;
     private const float kSmallAngle = 1f;
@@ -36,6 +37,7 @@ public class EX_8_3_MyScript : MonoBehaviour
         Debug.Assert(P2 != null);
         Debug.Assert(Pc != null);
         Pc.transform.localPosition = P1.transform.localPosition;
+        P1MoveToP2 = true;
 
         #region For visualizing the vectors
         // To support visualizing the vectors
@@ -76,38 +78,51 @@ public class EX_8_3_MyScript : MonoBehaviour
         Vector3 axis = Vector3.zero;
         Vector3 Pf = Vector3.zero;
         Vector4 q = Vector4.zero;
-        if ((theta2 > kSmallAngle)) {
-            switch (NextPcFrom) {
-                case PcPositionMode.FromPc:
-                    alpha = kDeltaTheta * Time.deltaTime;
-                    axis = Vector3.Cross(Vcn, V2n);
-                    Pf = Vcn;
-                    q = QFromAngleAxis(alpha, axis);
-                    Pc.transform.localPosition = QRotation(q, Pf);
-                break;
-                case PcPositionMode.FromP1:
-                    float alpha1 = theta1;
-                    Vector3 axis1 = Vector3.Cross(V1n, V2n);
-                    Vector4 q1 = QFromAngleAxis(alpha1, axis1);
-                    alpha = kDeltaTheta * Time.deltaTime;
-                    axis = axis1;
-                    q = QFromAngleAxis(alpha, axis);
-                    Vector4 qc = QMultiplication(q, q1);
-                    Pf = V1n;
-                    Pc.transform.localPosition = QRotation(qc, Pf);
-                break;
-                case PcPositionMode.FromP2:
-                    alpha = theta2 - (kDeltaTheta * Time.deltaTime);
-                    axis = Vector3.Cross(V2n, V1n);
-                    Pf = V2n;
-                    q = QFromAngleAxis(alpha, axis);
-                    Pc.transform.localPosition = QRotation(q, Pf);
-                break;
+        if (P1MoveToP2){
+            if ((theta2 > kSmallAngle)) {
+                switch (NextPcFrom) {
+                    case PcPositionMode.FromPc:
+                        alpha = kDeltaTheta * Time.deltaTime;
+                        axis = Vector3.Cross(Vcn, V2n);
+                        Pf = Vcn;
+                        q = QFromAngleAxis(alpha, axis);
+                        Pc.transform.localPosition = QRotation(q, Pf);
+                        break;
+                    case PcPositionMode.FromP1:
+                        float alpha1 = theta1;
+                        Vector3 axis1 = Vector3.Cross(V1n, V2n);
+                        Vector4 q1 = QFromAngleAxis(alpha1, axis1);
+                        alpha = kDeltaTheta * Time.deltaTime;
+                        axis = axis1;
+                        q = QFromAngleAxis(alpha, axis);
+                        Vector4 qc = QMultiplication(q, q1);
+                        Pf = V1n;
+                        Pc.transform.localPosition = QRotation(qc, Pf);
+                        break;
+                    case PcPositionMode.FromP2:
+                        alpha = theta2 - (kDeltaTheta * Time.deltaTime);
+                        axis = Vector3.Cross(V2n, V1n);
+                        Pf = V2n;
+                        q = QFromAngleAxis(alpha, axis);
+                        Pc.transform.localPosition = QRotation(q, Pf);
+                        break;
+                }
+            } else {
+                Pc.transform.localPosition = P1.transform.localPosition;
             }
-
-        } else {
-            Pc.transform.localPosition = P1.transform.localPosition;
+        } else{
+            if (theta1 > kSmallAngle){
+                alpha = kDeltaTheta * Time.deltaTime;
+                axis = Vector3.Cross(Vcn, V1n);
+                q = QFromAngleAxis(alpha, axis);
+                Pf = Vcn;
+                Pc.transform.localPosition = QRotation(q, Pf);
+            }
+            else{
+                Pc.transform.localPosition =  P2.transform.localPosition;
+            }
         }
+
 
         #region  For visualizing the vectors
         // Make sure axis passes through the origin
