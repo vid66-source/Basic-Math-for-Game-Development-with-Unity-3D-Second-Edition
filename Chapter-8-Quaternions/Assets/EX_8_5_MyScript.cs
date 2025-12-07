@@ -8,10 +8,10 @@ public class EX_8_5_MyScript : MonoBehaviour
     public GameObject AlignX = null;   // Use own operator, align first axis
     public GameObject AlignXY = null;   // Use own operator, align both axes
     public GameObject AlignUnity = null;   // Align this frame using unity's rotation
-    
+
     private const float kSmallAngle = 1f;
     #region For visualizing the vectors
-    private const float kAxisLength = 3.0f;    
+    private const float kAxisLength = 3.0f;
     private MyAxisFrame ShowRF, uShowAF, ShowAF1, ShowAF2;
     #endregion
 
@@ -24,7 +24,7 @@ public class EX_8_5_MyScript : MonoBehaviour
         Debug.Assert(AlignX != null);
         Debug.Assert(AlignXY != null);
         Debug.Assert(AlignUnity != null);
-        
+
         #region For visualizing the vectors
         ShowRF = new MyAxisFrame();
         ShowAF1 = new MyAxisFrame();
@@ -36,7 +36,7 @@ public class EX_8_5_MyScript : MonoBehaviour
         sv.DisablePicking(AlignX, true);
         sv.DisablePicking(AlignXY, true);
         sv.DisablePicking(AlignUnity, true);
-        #endregion 
+        #endregion
     }
 
     // Update is called once per frame
@@ -52,13 +52,13 @@ public class EX_8_5_MyScript : MonoBehaviour
         Quaternion qUnity = Quaternion.LookRotation(vzr, vyr);
         AlignUnity.transform.localRotation = qUnity;
 
-        Vector4 qx = QAlignVectors(Vector3.right, vxr); 
-        AlignX.transform.localRotation = V4ToQ(qx);
-                        
-        Vector4 qy = QAlignVectors(AlignX.transform.up, vyr);
-        Vector4 qc = QMultiplication(qy, qx);
-        AlignXY.transform.localRotation = V4ToQ(qc);
-        
+        Quaternion qx = Quaternion.FromToRotation(Vector3.right, vxr);
+        AlignX.transform.localRotation = qx;
+
+        Quaternion qy = Quaternion.FromToRotation(AlignX.transform.up, vyr);
+        Quaternion qc = qy * qx;
+        AlignXY.transform.localRotation = qc;
+
         #region  For visualizing the vectors
         //ax = Vector3.Cross(ay, az);
 
@@ -118,7 +118,7 @@ public class EX_8_5_MyScript : MonoBehaviour
         Vector4 r;
         r.x = q1.w*q2.x + q1.x*q2.w + q1.y*q2.z - q1.z*q2.y;
         r.y = q1.w*q2.y - q1.x*q2.z + q1.y*q2.w + q1.z*q2.x;
-        r.z = q1.w*q2.z + q1.x*q2.y - q1.y*q2.x + q1.z*q2.w; 
+        r.z = q1.w*q2.z + q1.x*q2.y - q1.y*q2.x + q1.z*q2.w;
         r.w = q1.w*q2.w - q1.x*q2.x - q1.y*q2.y - q1.z*q2.z;
         return r;
     }
@@ -126,13 +126,13 @@ public class EX_8_5_MyScript : MonoBehaviour
     // Rotate p based on the quaternion q
     Vector3 QRotation(Vector4 qr, Vector3 p) {
         Vector4 pq = new Vector4(p.x, p.y, p.z, 0);
-        Vector4 qr_inv = new Vector4(-qr.x, -qr.y, -qr.z, qr.w); 
+        Vector4 qr_inv = new Vector4(-qr.x, -qr.y, -qr.z, qr.w);
                 // q-inv: is rotate by the same axis by -theta OR
                 //        =rotate by the -axis by theta
                 // in either case: it is the above;
-        
+
         pq = QMultiplication(qr, pq);
-        pq = QMultiplication(pq, qr_inv); 
+        pq = QMultiplication(pq, qr_inv);
         return new Vector3(pq.x, pq.y, pq.z);
     }
 }
