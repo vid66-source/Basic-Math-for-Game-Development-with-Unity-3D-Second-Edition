@@ -12,12 +12,12 @@ public class EX_8_4_MyScript : MonoBehaviour
     public  float Rate = 0.8f;
 
     private Vector3 Vot = Vector3.right; // (1,0, 0)
-    private Vector3 Vat =  Vector3.right; // (1, 0, 0)    
+    private Vector3 Vat =  Vector3.right; // (1, 0, 0)
 
     private const float kAgentSpeed = 0.01f;
     private const float kSmallAngle = 1f;
 
-    #region For visualizing the vectors    
+    #region For visualizing the vectors
     private MyVector Po2Pt;
     private MyVector PaDir;
     #endregion
@@ -28,8 +28,8 @@ public class EX_8_4_MyScript : MonoBehaviour
         Debug.Assert(Po != null);    // Verify proper setting in the editor
         Debug.Assert(Pt != null);
         Debug.Assert(Pa != null);
-        
-        
+
+
         #region For visualizing the vectors
         // To support visualizing the vectors
         Po2Pt = new MyVector {
@@ -42,7 +42,7 @@ public class EX_8_4_MyScript : MonoBehaviour
         };
         var sv = UnityEditor.SceneVisibilityManager.instance;
         sv.DisablePicking(Pa, true);
-        #endregion 
+        #endregion
     }
 
     // Update is called once per frame
@@ -50,7 +50,7 @@ public class EX_8_4_MyScript : MonoBehaviour
     {
         Vector3 o2t = Pt.transform.localPosition - Po.transform.localPosition;
         Vot = AlignVectors(Vot, o2t, Rate);
-        
+
         if (ActivateAgent) {
             Vector3 a2t = Pt.transform.localPosition - Pa.transform.localPosition;
             Vat = AlignVectors(Vat, a2t, Rate);
@@ -79,7 +79,7 @@ public class EX_8_4_MyScript : MonoBehaviour
         Vector4 q = new Vector4(0, 0, 0, 1); // Quaternion identity
         if (theta > kSmallAngle) {
             Vector3 axis = Vector3.Cross(from, to);
-            q = QFromAngleAxis(rate * Time.smoothDeltaTime * theta, axis);
+            q = QFromAngleAxis(1.0f, axis);
         }
         return QRotation(q, from);
     }
@@ -99,7 +99,7 @@ public class EX_8_4_MyScript : MonoBehaviour
         Vector4 r;
         r.x = q1.w*q2.x + q1.x*q2.w + q1.y*q2.z - q1.z*q2.y;
         r.y = q1.w*q2.y - q1.x*q2.z + q1.y*q2.w + q1.z*q2.x;
-        r.z = q1.w*q2.z + q1.x*q2.y - q1.y*q2.x + q1.z*q2.w; 
+        r.z = q1.w*q2.z + q1.x*q2.y - q1.y*q2.x + q1.z*q2.w;
         r.w = q1.w*q2.w - q1.x*q2.x - q1.y*q2.y - q1.z*q2.z;
         return r;
     }
@@ -107,13 +107,13 @@ public class EX_8_4_MyScript : MonoBehaviour
     // Rotate p based on the quaternion q
     Vector3 QRotation(Vector4 qr, Vector3 p) {
         Vector4 pq = new Vector4(p.x, p.y, p.z, 0);
-        Vector4 qr_inv = new Vector4(-qr.x, -qr.y, -qr.z, qr.w); 
+        Vector4 qr_inv = new Vector4(-qr.x, -qr.y, -qr.z, qr.w);
                 // q-inv: is rotate by the same axis by -theta OR
                 //        =rotate by the -axis by theta
                 // in either case: it is the above;
-        
+
         pq = QMultiplication(qr, pq);
-        pq = QMultiplication(pq, qr_inv); 
+        pq = QMultiplication(pq, qr_inv);
         return new Vector3(pq.x, pq.y, pq.z);
     }
 }
