@@ -7,12 +7,13 @@ public class EX_8_5_MyScript : MonoBehaviour
     public GameObject Pz = null;    // Z-position defining the z-axis
     public GameObject AlignX = null;   // Use own operator, align first axis
     public GameObject AlignXY = null;   // Use own operator, align both axes
+    public GameObject AlignXYDefault = null;   // Use own operator, align both axes
     public GameObject AlignUnity = null;   // Align this frame using unity's rotation
 
     private const float kSmallAngle = 1f;
     #region For visualizing the vectors
     private const float kAxisLength = 3.0f;
-    private MyAxisFrame ShowRF, uShowAF, ShowAF1, ShowAF2;
+    private MyAxisFrame ShowRF, uShowAF, ShowAF1, ShowAF2, ShowAF3;
     #endregion
 
     // Start is called before the first frame update
@@ -24,17 +25,20 @@ public class EX_8_5_MyScript : MonoBehaviour
         Debug.Assert(AlignX != null);
         Debug.Assert(AlignXY != null);
         Debug.Assert(AlignUnity != null);
+        Debug.Assert(AlignXYDefault != null);
 
         #region For visualizing the vectors
         ShowRF = new MyAxisFrame();
         ShowAF1 = new MyAxisFrame();
         ShowAF2 = new MyAxisFrame();
+        ShowAF3 = new MyAxisFrame();
         uShowAF = new MyAxisFrame();
 
         var sv = UnityEditor.SceneVisibilityManager.instance;
         sv.DisablePicking(Po, true);
         sv.DisablePicking(AlignX, true);
         sv.DisablePicking(AlignXY, true);
+        sv.DisablePicking(AlignXYDefault, true);
         sv.DisablePicking(AlignUnity, true);
         #endregion
     }
@@ -52,12 +56,18 @@ public class EX_8_5_MyScript : MonoBehaviour
         Quaternion qUnity = Quaternion.LookRotation(vzr, vyr);
         AlignUnity.transform.localRotation = qUnity;
 
-        Quaternion qx = Quaternion.FromToRotation(Vector3.right, vxr);
-        AlignX.transform.localRotation = qx;
+        Vector4 qx = QAlignVectors(Vector3.right, vxr);
+        AlignX.transform.localRotation = V4ToQ(qx);
 
-        Quaternion qy = Quaternion.FromToRotation(AlignX.transform.up, vyr);
-        Quaternion qc = qy * qx;
-        AlignXY.transform.localRotation = qc;
+        Vector4 qy = QAlignVectors(AlignX.transform.up, vyr);
+        Vector4 qc = QMultiplication(qy, qx);
+        AlignXY.transform.localRotation = V4ToQ(qc);
+
+        Vector4 qxD = QAlignVectors(vxr, Vector3.right);
+        Vector3 rotatedYD = QRotation(qxD, vyr);
+        Vector4 qyD = QAlignVectors(rotatedYD, Vector3.up);
+        Vector4 qcD = QMultiplication(qyD, qxD);
+        AlignXYDefault.transform.localRotation = V4ToQ(qcD);
 
         #region  For visualizing the vectors
         //ax = Vector3.Cross(ay, az);
@@ -78,6 +88,12 @@ public class EX_8_5_MyScript : MonoBehaviour
                     0.5f * AlignXY.transform.localScale.y * AlignXY.transform.up -
                     0.5f * AlignXY.transform.localScale.z * AlignXY.transform.forward;
         ShowAF2.SetFrame(AlignXY.transform.right, AlignXY.transform.up, AlignXY.transform.forward);
+
+        ShowAF3.At = AlignXYDefault.transform.localPosition -
+                    0.5f * AlignXYDefault.transform.localScale.x * AlignXYDefault.transform.right -
+                    0.5f * AlignXYDefault.transform.localScale.y * AlignXYDefault.transform.up -
+                    0.5f * AlignXYDefault.transform.localScale.z * AlignXYDefault.transform.forward;
+        ShowAF3.SetFrame(AlignXYDefault.transform.right, AlignXYDefault.transform.up, AlignXYDefault.transform.forward);
 
         uShowAF.At = AlignUnity.transform.localPosition -
                     0.5f * AlignUnity.transform.localScale.x * AlignUnity.transform.right -
