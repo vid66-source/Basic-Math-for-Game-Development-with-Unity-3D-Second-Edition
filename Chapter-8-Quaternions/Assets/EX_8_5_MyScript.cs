@@ -63,6 +63,8 @@ public class EX_8_5_MyScript : MonoBehaviour
         Vector4 qy = QAlignVectors(AlignX.transform.up, vyr, Rate);
         Vector4 qc = QMultiplication(qy, qx);
         AlignXY.transform.localRotation = V4ToQ(qc) * AlignXY.transform.localRotation;
+        AlignXY.transform.localPosition += 0.5f * Time.deltaTime * AlignXY.transform.forward;
+
 
         Vector4 qxR = QAlignVectors(vxr, Vector3.right, Rate);
         Vector3 rotatedYD = QRotation(qxR, vyr);
