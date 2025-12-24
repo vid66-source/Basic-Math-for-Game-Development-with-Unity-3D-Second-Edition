@@ -1198,8 +1198,9 @@ MonoBehaviour:
   Pz: {fileID: 1259344429}
   AlignX: {fileID: 1855287467}
   AlignXY: {fileID: 439377956}
-  AlignXYDefault: {fileID: 1336358311}
+  AlignXYRevers: {fileID: 1336358311}
   AlignUnity: {fileID: 138919121}
+  Rate: 0.5
 --- !u!4 &1287585993
 Transform:
   m_ObjectHideFlags: 0
@@ -1340,7 +1341,7 @@ GameObject:
   - component: {fileID: 1336358313}
   - component: {fileID: 1336358312}
   m_Layer: 0
-  m_Name: AlignXYDefault
+  m_Name: AlignXYRevers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
