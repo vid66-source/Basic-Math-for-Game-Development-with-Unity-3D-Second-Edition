@@ -58,6 +58,7 @@
     <Compile Include="Assets\SceneHelper\AxisFrame.cs" />
     <Compile Include="Assets\EX_8_4_MyScript.cs" />
     <Compile Include="Assets\SceneHelper\Figures\F5B.cs" />
+    <Compile Include="Assets\BoxScript.cs" />
     <Compile Include="Assets\SceneHelper\MyQuaternion.cs" />
     <Compile Include="Assets\SceneHelper\MyIntervalBound.cs" />
     <Compile Include="Assets\SceneHelper\SingleSidedXZPlane.cs" />
