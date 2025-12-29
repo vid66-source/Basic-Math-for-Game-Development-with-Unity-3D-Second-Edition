@@ -22,19 +22,19 @@ public class EX_9_1_MyScript : MonoBehaviour
     public bool HeroXMotion = true;
     public bool HeroYMotion = true;
     private Vector3 Vh = Vector3.zero;
-    private float HeroSpeed = 0.5f; 
+    private float HeroSpeed = 0.5f;
     private const float kHeroZMotionRange = 1f;
-    
+
     //  Plane
     public bool ShowAxisFrame = false;
     public float D = -6.7f; // The distance to the plane
     public Vector3 Vn;     // Normal vector of reflection plane
     public GameObject Pn;  // Location where the plane center is
-    
+
     // Shadow
     public bool CastShadow = true;
     public GameObject Ps;  // Location of Shadow of Agent
-    
+
     // Reflection
     public bool DoReflection = true;
     public GameObject Pon; // Collision point of Agent
@@ -44,14 +44,14 @@ public class EX_9_1_MyScript : MonoBehaviour
     public bool CollideTreasure = true;
     public GameObject Pt;   // Treasure position
     public float Tr = 2f;   // Treasure radius
-    
+
 
     public bool ShowDebugLines = true;
 
     #region For visualization
     // AimSystem
     private MyVector ShowAim;
-    
+
     MyVector ShowVrN;
     // MyLineSegment ShowProj, ShowToPn, ShowFromPn;
     MyXZPlane ShowReflectionPlane;
@@ -111,7 +111,7 @@ public class EX_9_1_MyScript : MonoBehaviour
         sv.DisablePicking(Pon, true);
         sv.DisablePicking(Pr, true);
         sv.DisablePicking(Ph, true);
-        #endregion 
+        #endregion
     }
 
     // Update is called once per frame
@@ -119,7 +119,7 @@ public class EX_9_1_MyScript : MonoBehaviour
     {
         #region Step 0: Initial error checking
         Debug.Assert((Pc.transform.localPosition - Pb.transform.localPosition).magnitude > float.Epsilon);
-        Debug.Assert(Vn.magnitude > float.Epsilon);        
+        Debug.Assert(Vn.magnitude > float.Epsilon);
         Debug.Assert(Aspeed > float.Epsilon);
         Debug.Assert(Tr > float.Epsilon);
         // recoveries from the errors
@@ -152,7 +152,7 @@ public class EX_9_1_MyScript : MonoBehaviour
             if (AgentSinceTime > AgentSentInterval)
             {  // Time to re-send the agent from base
                 Pa.transform.localPosition = Pc.transform.localPosition;
-                Adir = aDir;  
+                Adir = aDir;
                     // Adir is the front direction (z)
                     // Up is always Vector3.up (0, 1, 0)
                 Pa.transform.localRotation = Quaternion.LookRotation(Adir, Vector3.up);
@@ -168,7 +168,7 @@ public class EX_9_1_MyScript : MonoBehaviour
         Vector3 po = Pa.transform.localPosition;
         Vector3 vx = Pa.transform.right;
         Vector3 vy = Pa.transform.up;
-        Vector3 vz = Pa.transform.forward; // 
+        Vector3 vz = Pa.transform.forward; //
 
         Vh.z += HeroSpeed * Time.deltaTime;  // moved
         if (Mathf.Abs(Vh.z) > kHeroZMotionRange) {
@@ -180,16 +180,16 @@ public class EX_9_1_MyScript : MonoBehaviour
             Vh.y = Mathf.Abs(Mathf.Cos(Mathf.PI * Vh.z));
 
         if (HeroXMotion)
-            Vh.x = Mathf.Sin(Mathf.PI * Vh.z);       
+            Vh.x = Mathf.Sin(Mathf.PI * Vh.z);
 
         Vector3 vhc = Vh.x * vx + Vh.y * vy + Vh.z * vz;
         Ph.transform.localPosition = po + vhc;
         Ph.transform.localRotation = Pa.transform.localRotation;
-        #endregion 
+        #endregion
 
         #region Step 4: The Plane and  in-front/parallel checks
         // Plane equation
-        Vn.Normalize(); 
+        Vn.Normalize();
         Pn.transform.localPosition = D * Vn;
 
         // agent position checks
@@ -199,7 +199,7 @@ public class EX_9_1_MyScript : MonoBehaviour
         // Agent motion direction checks
         float aDirDotVn = Vector3.Dot(Adir, Vn);
         bool isApproaching = (aDirDotVn < 0f);
-        bool notParallel = (Mathf.Abs(aDirDotVn) > float.Epsilon);                
+        bool notParallel = (Mathf.Abs(aDirDotVn) > float.Epsilon);
         #endregion
 
         #region Step 5: The Shadow
@@ -230,10 +230,23 @@ public class EX_9_1_MyScript : MonoBehaviour
                 vr = 2 * m + von;
                 Pr.transform.localPosition = Pon.transform.localPosition + vr;
                 vrIsValid = true;
+
                 if (ShowDebugLines)
                 {
                     Debug.DrawLine(Pa.transform.localPosition, Pon.transform.localPosition, Color.red);
                     Debug.DrawLine(Pon.transform.localPosition, Pr.transform.localPosition, Color.red);
+                }
+
+                Vector3 half = Pa.transform.localScale * 0.5f;//half from local
+
+                float r = Mathf.Abs(Vector3.Dot(Vn,vx) * half.x) + Mathf.Abs(Vector3.Dot(Vn,vy) * half.y) + Mathf.Abs(Vector3.Dot(Vn,vz) * half.z);
+                float dist = Vector3.Dot(Pa.transform.position, Vn) - D;
+
+                if (dist <= r)
+                {
+                    Pa.transform.position = Pon.transform.position;
+                    Adir = vr.normalized;
+                    Pa.transform.localRotation = Quaternion.LookRotation(Adir, Vector3.up);
                 }
 
                 // if (von.magnitude < float.Epsilon) What will happen if you do this?
@@ -275,7 +288,7 @@ public class EX_9_1_MyScript : MonoBehaviour
         if (ShowAxisFrame && ShowDebugLines)
             Debug.DrawLine(Vector3.zero, Pn.transform.localPosition, Color.white);
 
-        // Aiming 
+        // Aiming
         ShowAim.VectorFromTo(Pb.transform.localPosition, Pc.transform.localPosition);
 
         // Refleciton plane
@@ -305,7 +318,7 @@ public class EX_9_1_MyScript : MonoBehaviour
                         s *= 0.98f;
                 // ShowToPn.VectorFromTo(Pa.transform.localPosition, Pon.transform.localPosition);
                 // ShowFromPn.VectorFromTo(Pon.transform.localPosition, Pr.transform.localPosition);
-            } 
+            }
         }
         ShowReflectionPlane.XSize = ShowReflectionPlane.ZSize = s;
         */
