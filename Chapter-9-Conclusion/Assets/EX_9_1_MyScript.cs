@@ -231,31 +231,44 @@ public class EX_9_1_MyScript : MonoBehaviour
                 Pr.transform.localPosition = Pon.transform.localPosition + vr;
                 vrIsValid = true;
 
+                Vector3 Pnow  = Pa.transform.localPosition;
+                Vector3 Pnext = Pnow + Adir * Aspeed * Time.deltaTime;
+
+                bool nowInFront  = Vector3.Dot(Pnow,  Vn) > D;
+                bool nextInFront = Vector3.Dot(Pnext, Vn) > D;
+
+
                 if (ShowDebugLines)
                 {
                     Debug.DrawLine(Pa.transform.localPosition, Pon.transform.localPosition, Color.red);
                     Debug.DrawLine(Pon.transform.localPosition, Pr.transform.localPosition, Color.red);
                 }
 
-                Vector3 half = Pa.transform.localScale * 0.5f;//half from local
+                // Vector3 half = Pa.transform.localScale * 0.5f;//half from local
+                //
+                // float r = Mathf.Abs(Vector3.Dot(Vn,vx) * half.x) + Mathf.Abs(Vector3.Dot(Vn,vy) * half.y) + Mathf.Abs(Vector3.Dot(Vn,vz) * half.z);
+                // float dist = Vector3.Dot(Pa.transform.position, Vn) - D;
+                //
+                // if (dist <= r)
+                // {
+                //     Pa.transform.position = Pon.transform.position;
+                //     Adir = vr.normalized;
+                //     // Pa.transform.localRotation = Quaternion.LookRotation(Adir, Vector3.up);
+                //     Vector3 forward = Adir.normalized;
+                //     Vector3 up = Vector3.up.normalized;
+                //     Vector3 right = Vector3.Cross(up, forward).normalized;
+                //     up = Vector3.Cross(forward, right).normalized;
+                //     Vector4 qZ = QAlignVectors(Vector3.forward, forward);
+                //     Vector3 currentUp = QRotation(qZ, Vector3.up);
+                //     Vector4 qUp = QAlignVectors(currentUp, up);
+                //     Vector4 finalQ = QMultiplication(qUp, qZ);
+                //     Pa.transform.localRotation = V4ToQ(finalQ);
+                // }
 
-                float r = Mathf.Abs(Vector3.Dot(Vn,vx) * half.x) + Mathf.Abs(Vector3.Dot(Vn,vy) * half.y) + Mathf.Abs(Vector3.Dot(Vn,vz) * half.z);
-                float dist = Vector3.Dot(Pa.transform.position, Vn) - D;
-
-                if (dist <= r)
-                {
-                    Pa.transform.position = Pon.transform.position;
+                if (nowInFront && !nextInFront) {
+                    Pa.transform.localPosition = Pon.transform.localPosition;
                     Adir = vr.normalized;
-                    // Pa.transform.localRotation = Quaternion.LookRotation(Adir, Vector3.up);
-                    Vector3 forward = Adir.normalized;
-                    Vector3 up = Vector3.up.normalized;
-                    Vector3 right = Vector3.Cross(up, forward).normalized;
-                    up = Vector3.Cross(forward, right).normalized;
-                    Vector4 qZ = QAlignVectors(Vector3.forward, forward);
-                    Vector3 currentUp = QRotation(qZ, Vector3.up);
-                    Vector4 qUp = QAlignVectors(currentUp, up);
-                    Vector4 finalQ = QMultiplication(qUp, qZ);
-                    Pa.transform.localRotation = V4ToQ(finalQ);
+                    Pa.transform.localRotation = Quaternion.LookRotation(Adir, Vector3.up);
                 }
 
                 // if (von.magnitude < float.Epsilon) What will happen if you do this?
